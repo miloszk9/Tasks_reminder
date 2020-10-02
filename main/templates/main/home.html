@@ -1,0 +1,23 @@
+{% extends "main/index.html" %}
+
+{% block content %}
+    <h1> {{date.day}}/{{date.month}}/{{date.year}} </h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="previous" value={{date_change}}> < </button>
+    </form>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="next" value={{date_change}}> > </button>
+    </form>
+
+    {% for record in db_data %}
+    <p>
+        Task: {{record.name}}
+        Time: {{record.date} }
+        Created: {{record.create_date}}
+        Author: {{record.author}}
+        State: {{record.state}}
+    </p>
+    {% endfor %}
+{% endblock content%}
