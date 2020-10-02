@@ -8,10 +8,11 @@ class Task(models.Model):
     create_date = models.DateTimeField(auto_now_add = True)
     date = models.DateTimeField(default = timezone.now)
     state = False
-
+    
     def __str__(self):
         return self.name
     
+    # Changing the state of the task, e.g. True == done, False == not done yet
     def state_change(self):
         if state == True:
             state = False
