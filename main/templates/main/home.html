@@ -14,11 +14,16 @@
     {% for record in db_data %}
     <p>
         Task: {{record.name}}
-        Time: {{record.date} }
+        Time: {{record.date}}
         Created: {{record.create_date}}
         Author: {{record.author}}
-        State: {{record.state}}
-        <!-- TODO button to change state of the task -->
+        State: {{record.isDone}}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="date_change" value={{date_change}} />
+            <button type="submit" name="task_done_id" value={{record.id}}> X </button>
+        </form>
     </p>
     {% endfor %}
 {% endblock content%}
