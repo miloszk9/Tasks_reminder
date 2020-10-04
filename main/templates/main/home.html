@@ -45,21 +45,54 @@
         Author: {{record.author}}
         State: {{record.isDone}}
         
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
+            Edit task
+        </button>
+
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="date_change" value={{date_change}} />
             <button type="submit" name="task_done_id" value={{record.id}}> X </button>
         </form>
+
+        <!-- Form to edit task == shown if button pressed -->
+        <div class="collapse" id="task_edit{{record.id}}">
+            <div class="card card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label for="text-input{{record.id}}" class="col-2 col-form-label">Task</label>
+                        <div class="col-10">
+                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value={{record.name}}>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for={{record.date.isoformat}} class="col-2 col-form-label">Date and time</label>
+                        <div class="col-10">
+                            <input id={{record.date.isoformat}} class="form-control input_date_edit" name="task_date" type="datetime-local" value={{record.date.isoformat}}>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit" value={{record.id}} name="edit_task">Edit</button>
+                </form>
+            </div>
+        </div>
     </p>
     {% endfor %}
 
     <script>
-        function imput_date(){
-            var time = new Date().toJSON();
-            time = time.substring(0, time.length - 8);
-            document.getElementById("input_date").value = time;
+        // When creating new task
+        // Matching default date with current one
+        var time = new Date().toJSON();
+        time = time.substring(0, time.length - 8);
+        document.getElementById("input_date").value = time;
+
+        // When editing task
+        // Matching default edit date with original one
+        for (var task of document.getElementsByClassName('input_date_edit')){
+            date = task.id;
+            time = date.substring(0, 16);
+            task.value = time;
         }
-        imput_date();
     </script>
 </main>
 {% endblock content%}

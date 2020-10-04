@@ -38,6 +38,17 @@ def home(request):
         date_get = date # to keep the current page
         date_change = (date - datetime.now()).days + 1 # to sync the days diff
 
+    # Editing task
+    if request.POST.get('edit_task', False) != False:
+        task = Task.objects.filter(id = int(request.POST.get('edit_task')))
+        task_name = request.POST.get('task_name', 'default')
+        task_date = request.POST.get('task_date', datetime.now() )
+        date = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
+        task.update(name = task_name, date = date)
+
+        date_get = date # to keep the current page
+        date_change = (date - datetime.now()).days + 1 # to sync the days diff
+
     # Getting Tasks from the current day
     ''' TODO sync records with logged user (when register implemented)'''
     db_data = Task.objects.filter(date__day = str(date_get.day),
