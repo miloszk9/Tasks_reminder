@@ -1,6 +1,7 @@
 {% extends "main/index.html" %}
 
 {% block content %}
+<main onload="imput_date()">
     <h1> {{date.day}}/{{date.month}}/{{date.year}} </h1>
     <form method="POST">
         {% csrf_token %}
@@ -10,6 +11,31 @@
         {% csrf_token %}
         <button type="submit" name="next" value={{date_change}}> > </button>
     </form>
+
+    <!-- Adding new task form -->
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
+        Add new task
+    </button>
+    <div class="collapse" id="task_add">
+        <div class="card card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-2 col-form-label">Task</label>
+                    <div class="col-10">
+                        <input class="form-control" name="task_name" type="text" id="example-text-input">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-datetime-local-input" class="col-2 col-form-label">Date and time</label>
+                    <div class="col-10">
+                        <input id='input_date' class="form-control" name="task_date" type="datetime-local" value='0' id="example-datetime-local-input">
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit" value="1" name="new_task">Create!</button>
+            </form>
+        </div>
+    </div>
 
     {% for record in db_data %}
     <p>
@@ -26,4 +52,14 @@
         </form>
     </p>
     {% endfor %}
+
+    <script>
+        function imput_date(){
+            var time = new Date().toJSON();
+            time = time.substring(0, time.length - 8);
+            document.getElementById("input_date").value = time;
+        }
+        imput_date();
+    </script>
+</main>
 {% endblock content%}

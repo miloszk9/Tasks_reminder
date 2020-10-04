@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Task
-from django.utils import timezone
 from django.contrib.auth.models import User
+from django.utils import timezone
 from datetime import datetime
 from datetime import timedelta
 
@@ -24,6 +24,20 @@ def home(request):
         else:
             task.update(isDone = True)
     
+    # Adding new task
+    ''' TODO Sync tasks with current user (when register implemented) '''
+    if request.POST.get('new_task'):
+        user = User.objects.filter(username='mylosz').first() # To be changed when registration made
+
+        task_name = request.POST.get('task_name', 'default')
+        task_date = request.POST.get('task_date', datetime.now() )
+        date = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
+        new_task = Task(author = user, name = task_name, date = date)
+        new_task.save()
+
+        date_get = date # to keep the current page
+        date_change = (date - datetime.now()).days + 1 # to sync the days diff
+
     # Getting Tasks from the current day
     ''' TODO sync records with logged user (when register implemented)'''
     db_data = Task.objects.filter(date__day = str(date_get.day),
