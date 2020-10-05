@@ -2,6 +2,11 @@
 
 {% block content %}
 <main onload="imput_date()">
+
+    <!-- User section: username and logging out button -->
+    <span>User: {{request.user}}</span>
+    <a href="{% url 'logout' %}"><button>Sign out</button></a>
+
     <h1> {{date.day}}/{{date.month}}/{{date.year}} </h1>
     <form method="POST">
         {% csrf_token %}

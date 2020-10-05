@@ -1,0 +1,34 @@
+{% extends "main/index.html" %}
+
+{% block content %}
+<main>
+    <!-- TODO put messages in boxes -->
+    <!-- Error message either from registration or login -->
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+
+    <div>
+        <h1>Register</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <p>Username: </p>{{register_form.username}}
+            <p>Email: </p>{{register_form.email}}
+            <p>Password: </p>{{register_form.password1}}
+            <p>Password confirmation:</p>{{register_form.password2}}
+            <input type="submit" name="Register" value="Register">
+        </form>
+        {{register_form.errors}}
+    </div>
+    <div>
+        <h1>Login</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <p>Username: </p><input class="form-control" name="login_username" type="text">
+            <p>Password: </p><input class="form-control" name="login_password" type="password">
+    
+            <input type="submit" name="Login" value="Login">
+        </form>
+    </div>
+</main>
+{% endblock content %}

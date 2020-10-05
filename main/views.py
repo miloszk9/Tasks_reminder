@@ -1,11 +1,61 @@
-from django.shortcuts import render
-from .models import Task
+from django.shortcuts import render, redirect
+from .forms import CreateUserForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from .models import Task
 from django.utils import timezone
 from datetime import datetime
 from datetime import timedelta
 
+def login_page(request):
+    # If user is logged in
+    if request.user.id != None:
+        return redirect('home')
+
+    if request.method == 'POST':
+        if request.POST.get('Register'):
+            register_form = CreateUserForm(request.POST)
+            if register_form.is_valid():
+                register_form.save()
+
+                # Logging in automaticly aflter registration
+                username = register_form.cleaned_data['username']
+                password = register_form.cleaned_data['password1']
+                user = authenticate(request, username = username, password = password)
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, 'Registration failed.')
+
+        elif request.POST.get('Login'):
+            username = request.POST.get('login_username')
+            password = request.POST.get('login_password')
+            user = authenticate(request, username = username, password = password)
+            print(username + ' ' + password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, 'Login failed.')
+
+    data = {
+        'register_form': CreateUserForm,
+    }
+    return render(request, 'main/login.html', data)
+
+def logout_user(request):
+    logout(request)
+    return redirect('login_page')
+
 def home(request):
+    # If user is not logged in
+    if request.user.id == None:
+        return redirect('login_page')
+
+    # user = username of logged user
+    user = request.user
+
     # Making the main date changable, now only with left and right arrow
     date_change = 0
     if request.POST.get('next'):
@@ -18,16 +68,14 @@ def home(request):
 
     # Changing state of the task to opposite.
     if request.POST.get('task_done_id', False) != False:
-        task = Task.objects.filter(id = int(request.POST.get('task_done_id')))
+        task = Task.objects.filter(author = user, id = int(request.POST.get('task_done_id')))
         if task.first().isDone == True:
             task.update(isDone = False)
         else:
             task.update(isDone = True)
     
     # Adding new task
-    ''' TODO Sync tasks with current user (when register implemented) '''
     if request.POST.get('new_task'):
-        user = User.objects.filter(username='mylosz').first() # To be changed when registration made
 
         task_name = request.POST.get('task_name', 'default')
         task_date = request.POST.get('task_date', datetime.now() )
@@ -40,7 +88,7 @@ def home(request):
 
     # Editing task
     if request.POST.get('edit_task', False) != False:
-        task = Task.objects.filter(id = int(request.POST.get('edit_task')))
+        task = Task.objects.filter(author = user, id = int(request.POST.get('edit_task')))
         task_name = request.POST.get('task_name', 'default')
         task_date = request.POST.get('task_date', datetime.now() )
         date = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
@@ -51,7 +99,8 @@ def home(request):
 
     # Getting Tasks from the current day
     ''' TODO sync records with logged user (when register implemented)'''
-    db_data = Task.objects.filter(date__day = str(date_get.day),
+    db_data = Task.objects.filter(author = user,
+                                  date__day = str(date_get.day),
                                   date__month = str(date_get.month),
                                   date__year = str(date_get.year) )
 
