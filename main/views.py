@@ -99,15 +99,23 @@ def home(request):
 
     # Getting Tasks from the current day
     ''' TODO sync records with logged user (when register implemented)'''
-    db_data = Task.objects.filter(author = user,
-                                  date__day = str(date_get.day),
-                                  date__month = str(date_get.month),
-                                  date__year = str(date_get.year) )
+    db_data_done = Task.objects.filter(author = user,
+                                       isDone = True,
+                                       date__day = str(date_get.day),
+                                       date__month = str(date_get.month),
+                                       date__year = str(date_get.year) )
+    
+    db_data_undone = Task.objects.filter(author = user,
+                                         isDone = False,
+                                         date__day = str(date_get.day),
+                                         date__month = str(date_get.month),
+                                         date__year = str(date_get.year) )
 
     data = {
         'date': date_get,
         'date_change': date_change,
-        'db_data': db_data,
+        'db_data_done': db_data_done,
+        'db_data_undone': db_data_undone,
         'title': 'Tasks reminder'
     }
     return render(request, 'main/home.html', data)
