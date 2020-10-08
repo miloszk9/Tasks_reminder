@@ -5,10 +5,13 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
         <span class="navbar-brand mr-auto">
-            <span class="navbar-brand d-block d-sm-none">TR</span>
-            <span class="navbar-brand d-none d-sm-block">Tasks reminder</span>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <span class="navbar-brand d-block d-sm-none">TR</span>
+                <span class="navbar-brand d-none d-sm-block">Tasks reminder</span>
+            </a>
         </span>
 
+        <!-- Selected date -->
         <ul class="navbar-nav navbar-dark">
             <li class="nav-item form-inline">
                 <form method="POST">
@@ -41,7 +44,7 @@
     </div>
 </nav>
 
-<main class="container pt-4 px-0">
+<main class="container pt-4 px-0 mb-5 pb-1">
 
     <!-- Adding new task form -->
     <div class="collapse pb-4" id="task_add">
@@ -66,6 +69,7 @@
         </div>
     </div>
 
+    <!-- Tasks table-->
     <table class="table">
 
         <thead class="thead-dark">
@@ -74,8 +78,11 @@
                 <th scope="col">Time</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
         </thead>
+
+        <!-- Not done tasks -->
         <tbody>
             {% for record in db_data_undone %}
                 <tr>
@@ -85,7 +92,8 @@
                         </span>
                     </th>
                     <td>
-                        <h4>{{record.date.hour}}:{{record.date.minute}}</h4>
+                        <!-- Changed from record.date.hour:record.date.minute because it didnt show zeros. E.g. not 07:00, but 7:0 -->
+                        <h4>{{record.date.isoformat.11}}{{record.date.isoformat.12}}:{{record.date.isoformat.14}}{{record.date.isoformat.15}}</h4>
                     </td>
                     <td>
                         <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
@@ -96,7 +104,14 @@
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="date_change" value={{date_change}}>
-                            <button class="btn btn-success" type="submit" name="task_done_id" value={{record.id}}>Done!</button>
+                            <button class="btn btn-outline-danger" type="submit" name="delete_task" value={{record.id}}>Delete task</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="date_change" value={{date_change}}>
+                            <button class="btn btn-success" type="submit" name="task_done" value={{record.id}}>Done!</button>
                         </form>
                     </td>
                 </tr>
@@ -128,18 +143,20 @@
 
             <!-- Adding new task button -->
             <tr>
-                <td colspan="4" class="text-center">
+                <td colspan="5" class="text-center">
                     <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
-                            Add new task!
+                        Add new task!
                     </button>
                 </td>
             </tr>
         </tbody>
     
+        <!-- Done tasks -->
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Done tasks</th>
                 <th scope="col">Time</th>
+                <th scope="col"></th>
                 <th scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -147,9 +164,14 @@
         <tbody>
             {% for record in db_data_done %}
                 <tr>
-                    <th scope="row">{{record.name}}</th>
+                    <th scope="row">
+                        <span class="text-break">
+                            {{record.name}}
+                        </span>
+                    </th>
                     <td>
-                        <h4>{{record.date.hour}}:{{record.date.minute}}</h4>
+                        <!-- Changed from record.date.hour:record.date.minute because it didnt show zeros. E.g. not 07:00, but 7:0 -->
+                        <h4>{{record.date.isoformat.11}}{{record.date.isoformat.12}}:{{record.date.isoformat.14}}{{record.date.isoformat.15}}</h4>
                     </td>
                     <td>
                         <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
@@ -160,7 +182,14 @@
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="date_change" value={{date_change}}>
-                            <button class="btn btn-danger" type="submit" name="task_done_id" value={{record.id}}>Undone!</button>
+                            <button class="btn btn-outline-danger" type="submit" name="delete_task" value={{record.id}}>Delete task</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="date_change" value={{date_change}}>
+                            <button class="btn btn-danger" type="submit" name="task_done" value={{record.id}}>Undone!</button>
                         </form>
                     </td>
                 </tr>

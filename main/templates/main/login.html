@@ -1,34 +1,88 @@
 {% extends "main/index.html" %}
 
 {% block content %}
-<main>
-    <!-- TODO put messages in boxes -->
-    <!-- Error message either from registration or login -->
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
 
-    <div>
-        <h1>Register</h1>
-        <form method="POST">
-            {% csrf_token %}
-            <p>Username: </p>{{register_form.username}}
-            <p>Email: </p>{{register_form.email}}
-            <p>Password: </p>{{register_form.password1}}
-            <p>Password confirmation:</p>{{register_form.password2}}
-            <input type="submit" name="Register" value="Register">
-        </form>
-        {{register_form.errors}}
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container">
+        <span class="navbar-brand">
+            <span class="navbar-brand">Tasks reminder</span>
+        </span>
     </div>
-    <div>
-        <h1>Login</h1>
-        <form method="POST">
-            {% csrf_token %}
-            <p>Username: </p><input class="form-control" name="login_username" type="text">
-            <p>Password: </p><input class="form-control" name="login_password" type="password">
-    
-            <input type="submit" name="Login" value="Login">
-        </form>
+</nav>
+
+<main class="container pt-4 mb-5 pb-1">
+    <div class="row">
+        
+        {% for message in messages %}
+            <div class="card col-12 bg-danger text-light text-center mb-4">
+                <h5 class="my-1">{{ message }}</h5>
+            </div>
+        {% endfor %}
+
+        <div class="card col-12 col-md-5">
+            <h1 class="text-center pt-1">Register</h1>
+            <form method="POST" class="py-2">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Username</label>
+                    <div class="col-7">
+                        {{register_form.username}}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Email</label>
+                    <div class="col-7">
+                        {{register_form.email}}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Password</label>
+                    <div class="col-7">
+                        {{register_form.password1}}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Password confirmation</label>
+                    <div class="col-7">
+                        {{register_form.password2}}
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-secondary" type="submit" name="Register" value="1">Register</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-0 col-md-2 text-center">
+            <h3 class="h-60 mt-1 pt-1 mt-md-5 pt-md-5"> OR </h3>
+        </div>
+        <div class="card col-12 col-md-5">
+            <h1 class="text-center pt-1">Login</h1>
+            <form method="POST" class="py-2">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Username</label>
+                    <div class="col-7">
+                        <input name="login_username" type="text">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Password</label>
+                    <div class="col-7">
+                        <input name="login_password" type="password">
+                    </div>
+                </div>                
+                <div class="text-center">
+                    <button class="btn btn-secondary" type="submit" name="Login" value="1">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
 </main>
+
+<script>
+    // To add class to inputs in registration and login form
+    for (var input of document.getElementsByTagName('input')){
+        input.classList += 'form-control';
+    }
+</script>
 {% endblock content %}

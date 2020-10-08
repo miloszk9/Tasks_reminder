@@ -26,6 +26,7 @@ def login_page(request):
                 login(request, user)
                 return redirect('home')
             else:
+                print('register fail')
                 messages.error(request, 'Registration failed.')
 
         elif request.POST.get('Login'):
@@ -37,6 +38,7 @@ def login_page(request):
                 login(request, user)
                 return redirect('home')
             else:
+                print('login fail')
                 messages.error(request, 'Login failed.')
 
     data = {
@@ -56,19 +58,19 @@ def home(request):
     # user = username of logged user
     user = request.user
 
-    # Making the main date changable, now only with left and right arrow
+    # Making the main date changable (currently only with left and right arrow)
     date_change = 0
     if request.POST.get('next'):
         date_change = int(request.POST.get('next')) + 1
     elif request.POST.get('previous'):
         date_change = int(request.POST.get('previous')) - 1
-    elif request.POST.get('date_change'):
+    elif request.POST.get('date_change'): # Used when editing or deleting task (to keep the same date)
         date_change = int(request.POST.get('date_change'))
     date_get = datetime.now() + timedelta(days = date_change)
 
-    # Changing state of the task to opposite.
-    if request.POST.get('task_done_id', False) != False:
-        task = Task.objects.filter(author = user, id = int(request.POST.get('task_done_id')))
+    # Changing state of the task to opposite
+    if request.POST.get('task_done', False) != False:
+        task = Task.objects.filter(author = user, id = int(request.POST.get('task_done')))
         if task.first().isDone == True:
             task.update(isDone = False)
         else:
@@ -96,20 +98,24 @@ def home(request):
 
         date_get = date # to keep the current page
         date_change = (date - datetime.now()).days + 1 # to sync the days diff
+    
+    # Deleting task
+    if request.POST.get('delete_task', False) != False:
+        task = Task.objects.filter(author = user, id = int(request.POST.get('delete_task')))
+        task.delete()
 
     # Getting Tasks from the current day
-    ''' TODO sync records with logged user (when register implemented)'''
     db_data_done = Task.objects.filter(author = user,
                                        isDone = True,
                                        date__day = str(date_get.day),
                                        date__month = str(date_get.month),
-                                       date__year = str(date_get.year) )
+                                       date__year = str(date_get.year) ).order_by('date')
     
     db_data_undone = Task.objects.filter(author = user,
                                          isDone = False,
                                          date__day = str(date_get.day),
                                          date__month = str(date_get.month),
-                                         date__year = str(date_get.year) )
+                                         date__year = str(date_get.year) ).order_by('date')
 
     data = {
         'date': date_get,
