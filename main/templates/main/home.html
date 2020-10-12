@@ -65,7 +65,7 @@
     <div class="collapse pb-4" id="task_add">
         <div class="card card-body">
             <div class="row pb-2">
-                <h4 class="card-title ml-3">Create new task</h5>            
+                <h4 class="card-title ml-3 mt-2">Create new task</h5>            
                 <!-- Closing collapsed window -->
                 <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add"">
                     <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -165,7 +165,7 @@
                         <div class="collapse pb-4" id="task_edit{{record.id}}">
                             <div class="card card-body">
                                 <div class="row pb-2">
-                                    <h4 class="card-title ml-3">Edit task</h4>            
+                                    <h4 class="card-title ml-3 mt-2">Edit task</h4>            
                                     <!-- Closing collapsed window -->
                                     <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
                                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -180,7 +180,7 @@
                                     <div class="form-group row">
                                         <label for="text-input{{record.id}}" class="col-4 col-form-label">Task</label>
                                         <div class="col-8">
-                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value={{record.name}}>
+                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value='{{record.name}}'>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -275,7 +275,7 @@
                         <div class="collapse pb-4" id="task_edit{{record.id}}">
                             <div class="card card-body">
                                 <div class="row pb-2">
-                                    <h4 class="card-title ml-3">Edit task</h4>            
+                                    <h4 class="card-title ml-3 mt-2">Edit task</h4>            
                                     <!-- Closing collapsed window -->
                                     <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
                                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -290,7 +290,7 @@
                                     <div class="form-group row">
                                         <label for="text-input{{record.id}}" class="col-4 col-form-label">Task</label>
                                         <div class="col-8">
-                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value={{record.name}}>
+                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value='{{record.name}}'>
                                         </div>
                                     </div>
                                     <div class="form-group row">
