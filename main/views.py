@@ -105,11 +105,15 @@ def home(request):
         task.delete()
 
     # Getting Tasks from the current day
+    '''
     db_data_done = Task.objects.filter(author = user,
                                        isDone = True,
                                        date__day = str(date_get.day),
                                        date__month = str(date_get.month),
-                                       date__year = str(date_get.year) ).order_by('date')
+                                       date__year = str(date_get.year) ).order_by('date') '''
+    db_data_done = Task.objects.raw('SELECT * FROM main_task WHERE \
+                                     "author_id" =' + str(user.id) + ' AND "isDone" = True')
+
     
     db_data_undone = Task.objects.filter(author = user,
                                          isDone = False,
