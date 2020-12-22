@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from .forms import CreateUserForm
 from django.contrib import messages
+from django.db import connection # To perform raw sql queries
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Task
+from .models import *
 from django.utils import timezone
 from datetime import datetime
 from datetime import timedelta
@@ -17,16 +18,23 @@ def login_page(request):
         if request.POST.get('Register'):
             register_form = CreateUserForm(request.POST)
             if register_form.is_valid():
+                # Saving form
                 register_form.save()
 
-                # Logging in automaticly aflter registration
+                # Logging in automaticly after registration
                 username = register_form.cleaned_data['username']
                 password = register_form.cleaned_data['password1']
                 user = authenticate(request, username = username, password = password)
                 login(request, user)
+
+                # Inserting user to Birthdate table
+                user_id = request.user.id
+                birthdate = register_form.cleaned_data['birthdate']
+                with connection.cursor() as cursor:
+                    cursor.execute("INSERT INTO main_birthdate (user_id, birthdate) VALUES ({},date '{}');".format(user_id, birthdate))
+                
                 return redirect('home')
             else:
-                print('register fail')
                 messages.error(request, 'Registration failed.')
 
         elif request.POST.get('Login'):
@@ -38,7 +46,6 @@ def login_page(request):
                 login(request, user)
                 return redirect('home')
             else:
-                print('login fail')
                 messages.error(request, 'Login failed.')
 
     data = {
@@ -57,6 +64,7 @@ def home(request):
 
     # user = username of logged user
     user = request.user
+    user_id = request.user.id
 
     # Making the main date changable (currently only with left and right arrow)
     date_change = 0
@@ -69,57 +77,54 @@ def home(request):
     date_get = datetime.now() + timedelta(days = date_change)
 
     # Changing state of the task to opposite
-    if request.POST.get('task_done', False) != False:
-        task = Task.objects.filter(author = user, id = int(request.POST.get('task_done')))
-        if task.first().isDone == True:
-            task.update(isDone = False)
+    if request.POST.get('task_change_status', False) != False:
+        task_id = int(request.POST.get('task_change_status'))
+        task = Task.objects.raw("SELECT id, is_done FROM main_task WHERE user_id = {} AND id = {}".format(user_id, task_id))[0]
+
+        if task.is_done == True:
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE main_task SET is_done = false WHERE id = {}".format(task_id))
         else:
-            task.update(isDone = True)
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE main_task SET is_done = true WHERE id = {}".format(task_id))
     
     # Adding new task
     if request.POST.get('new_task'):
 
         task_name = request.POST.get('task_name', 'default')
         task_date = request.POST.get('task_date', datetime.now() )
-        date = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
-        new_task = Task(author = user, name = task_name, date = date)
-        new_task.save()
 
-        date_get = date # to keep the current page
-        date_change = (date - datetime.now()).days + 1 # to sync the days diff
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO main_task (name, todo_timestamp, todo_date, user_id)\
+                            VALUES ('{}','{}','{}',{});".format(task_name, task_date, task_date, user_id))
+
+        # switch the day to the added task day
+        date_get = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
+        date_change = (date_get - datetime.now()).days + 1 # to sync the days diff
 
     # Editing task
     if request.POST.get('edit_task', False) != False:
-        task = Task.objects.filter(author = user, id = int(request.POST.get('edit_task')))
+        task_id = int(request.POST.get('edit_task'))
         task_name = request.POST.get('task_name', 'default')
-        task_date = request.POST.get('task_date', datetime.now() )
-        date = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
-        task.update(name = task_name, date = date)
+        task_date = request.POST.get('task_date', datetime.now())
+        
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE main_task SET \"name\" = '{}', todo_timestamp = '{}',\
+                            todo_date = '{}' WHERE id = {};".format(task_name, task_date, task_date, task_id))
 
-        date_get = date # to keep the current page
-        date_change = (date - datetime.now()).days + 1 # to sync the days diff
+        # switch the day to the added task day
+        date_get = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
+        date_change = (date_get - datetime.now()).days + 1 # to sync the days diff
     
     # Deleting task
     if request.POST.get('delete_task', False) != False:
-        task = Task.objects.filter(author = user, id = int(request.POST.get('delete_task')))
-        task.delete()
+        task_id = int(request.POST.get('delete_task'))
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM main_task WHERE id = {} AND user_id = {}".format(task_id, user_id))
 
     # Getting Tasks from the current day
-    '''
-    db_data_done = Task.objects.filter(author = user,
-                                       isDone = True,
-                                       date__day = str(date_get.day),
-                                       date__month = str(date_get.month),
-                                       date__year = str(date_get.year) ).order_by('date') '''
-    db_data_done = Task.objects.raw('SELECT * FROM main_task WHERE \
-                                     "author_id" =' + str(user.id) + ' AND "isDone" = True')
-
-    
-    db_data_undone = Task.objects.filter(author = user,
-                                         isDone = False,
-                                         date__day = str(date_get.day),
-                                         date__month = str(date_get.month),
-                                         date__year = str(date_get.year) ).order_by('date')
+    db_data_done = Task.objects.raw("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = true".format(user_id, date_get))
+    db_data_undone = Task.objects.raw("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = false".format(user_id, date_get))
 
     data = {
         'date': date_get,

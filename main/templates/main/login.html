@@ -36,6 +36,12 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Day of birth</label>
+                    <div class="col-7">
+                        {{register_form.birthdate}}
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="example-text-input" class="col-5 col-form-label">Password</label>
                     <div class="col-7">
                         {{register_form.password1}}
@@ -80,9 +86,12 @@
 </main>
 
 <script>
-    // To add class to inputs in registration and login form
+    // To add class 'form-control' to inputs in registration and login form
     for (var input of document.getElementsByTagName('input')){
         input.classList += 'form-control';
+        if (input.name == "birthdate"){
+            input.type = "date";
+        }
     }
 </script>
 {% endblock content %}
