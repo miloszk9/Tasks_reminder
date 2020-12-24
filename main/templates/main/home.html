@@ -4,15 +4,15 @@
 
 <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
-        <span class="navbar-brand mr-auto">
+        <span class="navbar-nav">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <span class="navbar-brand d-block d-md-none">TR</span>
-                <span class="navbar-brand d-none d-md-block">Tasks reminder</span>
+                <span class="navbar-brand d-block d-md-none">Todo</span>
+                <span class="navbar-brand d-none d-md-block">Todo list</span>
             </a>
         </span>
 
         <!-- Selected date -->
-        <ul class="navbar-nav navbar-dark">
+        <ul class="navbar-nav navbar-dark ml-auto">
             <li class="nav-item form-inline">
                 <form method="POST">
                     {% csrf_token %}
@@ -44,8 +44,24 @@
                 <li class="nav-item mr-2 text-light mt-auto mb-auto d-none d-md-block">
                     <span>Hello, {{request.user}}</span>
                 </li>
+
+                <!-- Friends button -->
                 <li class="nav-item d-none d-lg-inline">
-                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light">Sign out</button></a>
+                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light">Friends</button></a>
+                </li>
+                <li class="nav-item d-lg-none">
+                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light border-0">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                    </button></a>
+                </li>
+
+                <!-- Log out button -->
+                <li class="nav-item d-none d-lg-inline">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light ml-1">Sign out</button></a>
                 </li>
                 <li class="nav-item d-lg-none">
                     <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0">
@@ -60,6 +76,15 @@
 </nav>
 
 <main class="container pt-4 mb-5 pb-1">
+
+    {% if friend_bday %}
+    <div class="alert alert-success text-center" role="alert">
+        Birthday: 
+        {% for name in friend_bday %}
+            {{name.0}} 
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Adding new task form -->
     <div class="collapse pb-4" id="task_add">

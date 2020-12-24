@@ -8,6 +8,7 @@ from .models import *
 from django.utils import timezone
 from datetime import datetime
 from datetime import timedelta
+from .row_sql_dict import dictfetchall
 
 def login_page(request):
     # If user is logged in
@@ -50,6 +51,7 @@ def login_page(request):
 
     data = {
         'register_form': CreateUserForm,
+        'title': 'Tasks reminder - login'
     }
     return render(request, 'main/login.html', data)
 
@@ -81,12 +83,11 @@ def home(request):
         task_id = int(request.POST.get('task_change_status'))
         task = Task.objects.raw("SELECT id, is_done FROM main_task WHERE user_id = {} AND id = {}".format(user_id, task_id))[0]
 
-        if task.is_done == True:
-            with connection.cursor() as cursor:
-                cursor.execute("UPDATE main_task SET is_done = false WHERE id = {}".format(task_id))
-        else:
-            with connection.cursor() as cursor:
-                cursor.execute("UPDATE main_task SET is_done = true WHERE id = {}".format(task_id))
+        with connection.cursor() as cursor:
+            if task.is_done == True:
+                    cursor.execute("UPDATE main_task SET is_done = false WHERE id = {}".format(task_id))
+            else:
+                    cursor.execute("UPDATE main_task SET is_done = true WHERE id = {}".format(task_id))
     
     # Adding new task
     if request.POST.get('new_task'):
@@ -126,11 +127,78 @@ def home(request):
     db_data_done = Task.objects.raw("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = true".format(user_id, date_get))
     db_data_undone = Task.objects.raw("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = false".format(user_id, date_get))
 
+    friend_bday = None
+    # Friend's birthday
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT u.username FROM auth_user u, main_birthdate b \
+                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{u_id}' AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = '{u_id}' AND is_accepted = true))\
+                        AND u.id = b.user_id AND CAST(b.birthdate as text) ~ '{date}'".format(u_id = user_id, date = str(date_get)[4:10]))
+        friend_bday = cursor.fetchall()
+
     data = {
         'date': date_get,
         'date_change': date_change,
         'db_data_done': db_data_done,
         'db_data_undone': db_data_undone,
-        'title': 'Tasks reminder'
+        'friend_bday' : friend_bday,
+        'title': 'Tasks reminder - home'
     }
     return render(request, 'main/home.html', data)
+
+def friends(request):
+    # If user is not logged in
+    if request.user.id == None:
+        return redirect('login_page')
+
+    user_id = request.user.id
+
+    if request.method == 'POST':
+        
+        if request.POST.get('friend_add'):
+            friend_id = User.objects.raw("SELECT id FROM auth_user WHERE username = '{}'".format(request.POST.get('friend_name')))[0].id
+            with connection.cursor() as cursor:
+                cursor.execute("INSERT INTO main_friends (user1_id, user2_id)\
+                                VALUES ({}, {});".format(user_id, friend_id))
+
+        if request.POST.get('friend_delete'):
+            friend_id = User.objects.raw("SELECT id FROM auth_user WHERE username = '{}'".format(request.POST.get('friend_delete')))[0].id
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM main_friends WHERE (user1_id = {u1} AND user2_id = {u2}) OR\
+                                (user1_id = {u2} AND user2_id = {u1});".format(u1 = user_id, u2 = friend_id))
+
+        if request.POST.get('friend_accept'):
+            friend_id = User.objects.raw("SELECT id FROM auth_user WHERE username = '{}'".format(request.POST.get('friend_accept')))[0].id
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE main_friends SET is_accepted = true \
+                                WHERE user1_id = {} AND user2_id = {};".format(friend_id, user_id))
+
+    friends_request = []
+    friends_pending = []
+    friends = []
+
+    # Getting data from the database
+    with connection.cursor() as cursor:
+        # Friend request sent to user
+        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user1_id FROM main_friends WHERE user2_id = '{}' AND is_accepted = false)".format(user_id))
+        friends_request = dictfetchall(cursor)
+
+        # Friend request sent by user
+        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{}' AND is_accepted = false)".format(user_id))
+        friends_pending = dictfetchall(cursor)
+
+        # Accepted friend
+        # TODO - fix: doesnt show more than one
+        cursor.execute("SELECT u.username, b.birthdate FROM auth_user u, main_birthdate b \
+                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{u_id}' AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = '{u_id}' AND is_accepted = true))\
+                        AND u.id = b.user_id".format(u_id = user_id))
+        friends = dictfetchall(cursor)
+
+    data = {
+        'friends_request': friends_request,
+        'friends_pending': friends_pending,
+        'friends': friends,
+        'title': 'Tasks reminder - friends'
+    }
+    return render(request, 'main/friends.html', data)
