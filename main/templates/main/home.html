@@ -5,7 +5,7 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
         <span class="navbar-nav">
-            <a class="navbar-brand" href="{% url 'home' %}">
+            <a class="navbar-brand mr-1" href="{% url 'home' %}">
                 <span class="navbar-brand d-block d-md-none">Todo</span>
                 <span class="navbar-brand d-none d-md-block">Todo list</span>
             </a>
@@ -16,7 +16,7 @@
             <li class="nav-item form-inline">
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-light border-0 mr-1 px-1" name="previous" value={{date_change}}>
+                    <button type="submit" class="btn btn-sm btn-outline-light border-0 mr-1 px-1" name="date_change" value={{date_change|add:-1}}>
                         <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-left-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5.5a.5.5 0 0 0 0-1H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5z"/>
                         </svg>
@@ -29,7 +29,7 @@
             <li class="nav-item form-inline">
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-light border-0 ml-1 px-1" name="next" value={{date_change}}>
+                    <button type="submit" class="btn btn-sm btn-outline-light border-0 ml-1 px-1" name="date_change" value={{date_change|add:1}}>
                         <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-right-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-11.5.5a.5.5 0 0 1 0-1h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5z"/>
                         </svg>
@@ -50,7 +50,7 @@
                     <a href="{% url 'friends' %}"><button class="btn btn-outline-light">Friends</button></a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light border-0">
+                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light border-0 pl-1 pr-1">
                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                             <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
@@ -64,7 +64,7 @@
                     <a href="{% url 'logout' %}"><button class="btn btn-outline-light ml-1">Sign out</button></a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0 pl-1 pr-1">
                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2v13h1V2.5a.5.5 0 0 0-.5-.5H11zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
                         </svg>
