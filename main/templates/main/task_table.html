@@ -1,0 +1,123 @@
+<tr>
+    <td class="align-middle">
+        <h5 class="text-break my-0">
+            {{record.name}}
+        </h5>
+    </td>
+    <td class="align-middle">
+        <!-- Quite complicated because it didnt show zeros. E.g. not 07:00, but 7:0 -->
+        <h4 class="my-0">{{record.todo_timestamp.isoformat.11}}{{record.todo_timestamp.isoformat.12}}:{{record.todo_timestamp.isoformat.14}}{{record.todo_timestamp.isoformat.15}}</h4>
+    </td>
+    <td class="align-middle px-1">
+        <button class="btn btn-outline-dark border-0 pt-lg-1 px-1" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+            </svg>
+        </button>
+    </td>
+    <td class="align-middle px-1">
+        <button class="btn btn-outline-dark border-0 pt-lg-1 px-1" type="button" data-toggle="collapse" data-target="#task_share{{record.id}}" aria-expanded="false" aria-controls="task_edit">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>                                    </svg>
+        </button>
+    </td>
+    <td class="align-middle px-1">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="date_change" value={{date_change}}>
+            <button class="btn btn-outline-dark border-0 pt-lg-1 px-1" type="submit" name="delete_task" value={{record.id}}>
+                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"></path>
+                </svg> 
+            </button>
+        </form>
+    </td>
+    <td class="align-middle px-1">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="date_change" value={{date_change}}>
+            <button class="btn btn-outline-dark border-0 pt-lg-1 px-1" type="submit" name="task_change_status" value={{record.id}}>
+                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Adjusting icon depending on whether task is done or not -->
+                    {% if record.id_done == True %}
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                    {% else %}
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    {% endif %}
+                </svg>
+            </button>
+        </form>
+    </td>
+</tr>
+
+<!-- Task edit form -->
+<div class="collapse pb-4" id="task_edit{{record.id}}">
+    <div class="card card-body">
+        <div class="row pb-2">
+            <h4 class="card-title ml-3 mt-2">Edit task</h4>            
+            <!-- Closing collapsed window -->
+            <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
+                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </button>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="text-input{{record.id}}" class="col-4 col-form-label">Task</label>
+                <div class="col-8">
+                    <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value='{{record.name}}'>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for={{record.todo_timestamp.isoformat}} class="col-4 col-form-label">Date and time</label>
+                <div class="col-8">
+                    <input id={{record.todo_timestamp.isoformat}} class="form-control input_date_edit" name="task_date" type="datetime-local" value={{record.todo_timestamp.isoformat}}>
+                </div>
+            </div>
+            <button class="btn btn-outline-success" type="submit" value={{record.id}} name="edit_task">Save</button>
+        </form>
+    </div>
+</div>
+
+<!-- Task share form -->
+<div class="collapse pb-4" id="task_share{{record.id}}">
+    <div class="card card-body">
+        <div class="row pb-2">
+            <h4 class="card-title ml-3 mt-2">Share task with:</h4>            
+            <!-- Closing collapsed window -->
+            <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_share{{record.id}}" aria-expanded="false" aria-controls="task_share">
+                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </button>
+        </div>
+
+        <form method="POST">
+            <!-- If user has no friends -> disable form -->
+            {% if not friend_nick.0 %}
+            <fieldset disabled>
+            {% endif %}
+
+            {% csrf_token %}
+
+            <select class="form-control mb-2" name="share_user">
+                {% for name in friend_nick %}
+                <option>{{name.0}}</option>
+                {% endfor %}
+            </select>
+            <div class="d-flex justify-content-center pt-2">
+                <button class="btn btn-outline-success col-5 mr-2" type="submit" value={{record.id}} name="share_task">Share</button>
+                <button class="btn btn-outline-danger col-5 ml-2" type="submit" value={{record.id}} name="share_delete">Unshare with all</button>
+            </div>
+            <!-- If user has no friends -> disable form -->
+            {% if not friend_nick.0 %}
+            </fieldset>
+            {% endif %}
+        </form>
+    </div>
+</div>

@@ -93,7 +93,7 @@ def home(request):
 
         # switch the day to the added task day
         date_get = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
-        date_change = (date_get - datetime.now()).days + 1 # to sync the days diff
+        date_change = (date_get - datetime.now()).days + 1 # keep the date with todo_date of added task
 
     # Editing task
     if request.POST.get('edit_task', False) != False:
@@ -107,7 +107,7 @@ def home(request):
 
         # switch the day to the added task day
         date_get = datetime( int(task_date[0:4]), int(task_date[5:7]), int(task_date[8:10]), int(task_date[11:13]), int(task_date[14:16]))
-        date_change = (date_get - datetime.now()).days + 1 # to sync the days diff
+        date_change = (date_get - datetime.now()).days # keep the date with todo_date of edited task
     
     # Deleting task
     if request.POST.get('delete_task', False) != False:
@@ -115,13 +115,50 @@ def home(request):
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM main_task WHERE id = {} AND user_id = {}".format(task_id, user_id))
 
+    # Sharing task
+    # TODO: id usera jako foreign key z friends (autousuwanie sharowanych tasków)
+    # TODO: usuwanie sharowanego taska (nie wszystkim)
+    if request.POST.get('share_task', False) != False:
+        task_id = int(request.POST.get('share_task'))
+        friend_name = request.POST.get('share_user')
+
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO main_share (user_id, task_id) \
+                            VALUES ((SELECT id FROM auth_user WHERE username = '{}'),{});".format(friend_name, task_id))
+
+    # Sharing delete
+    if request.POST.get('share_delete', False) != False:
+        task_id = int(request.POST.get('share_delete'))
+        #friend_name = request.POST.get('share_friend_id')
+
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM main_share WHERE task_id = {};".format(task_id))
+
+    # Getting data from database
     with connection.cursor() as cursor:
         # Getting Tasks from the current day
-        cursor.execute("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = true".format(user_id, date_get))
+        cursor.execute("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = true ORDER BY todo_timestamp".format(user_id, date_get))
         db_data_done = dictfetchall(cursor)
-        cursor.execute("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = false".format(user_id, date_get))
+        cursor.execute("SELECT * FROM main_task WHERE user_id = {} AND todo_date = '{}' AND is_done = false ORDER BY todo_timestamp".format(user_id, date_get))
         db_data_undone = dictfetchall(cursor)
+
+        # Getting shared tasks from the current day
+        cursor.execute("SELECT t.name, t.todo_timestamp, (SELECT username FROM auth_user WHERE id = t.user_id) AS username FROM main_task t \
+                        WHERE t.id IN (SELECT task_id FROM main_share WHERE user_id = {}) AND t.todo_date = '{}' AND t.is_done = true \
+                        ORDER BY t.todo_timestamp".format(user_id, date_get))
+        shared_done = dictfetchall(cursor)
+
+        cursor.execute("SELECT t.name, t.todo_timestamp, (SELECT username FROM auth_user WHERE id = t.user_id) AS username FROM main_task t \
+                        WHERE t.id IN (SELECT task_id FROM main_share WHERE user_id = {}) AND t.todo_date = '{}' AND t.is_done = false \
+                        ORDER BY t.todo_timestamp".format(user_id, date_get))
+        shared_undone = dictfetchall(cursor)
         
+        # Friend nicknames
+        cursor.execute("SELECT u.username FROM auth_user u\
+                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{u_id}' AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = '{u_id}' AND is_accepted = true))".format(u_id = user_id))
+        friend_nick = cursor.fetchall()
+
         # Friend's birthday
         cursor.execute("SELECT u.username FROM auth_user u, main_birthdate b \
                         WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{u_id}' AND is_accepted = true)\
@@ -133,7 +170,10 @@ def home(request):
         'date': date_get,
         'date_change': date_change,
         'db_data_done': db_data_done,
+        'shared_done' : shared_done,
+        'shared_undone' : shared_undone,
         'db_data_undone': db_data_undone,
+        'friend_nick' : friend_nick,
         'friend_bday' : friend_bday,
         'title': 'Tasks reminder - home'
     }
