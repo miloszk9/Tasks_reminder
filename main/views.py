@@ -148,12 +148,12 @@ def home(request):
 
         # Getting shared tasks from the current day
         cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
-                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND t.todo_date = '{}' AND t.is_done = true \
+                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND s.task_id = t.id AND t.todo_date = '{}' AND t.is_done = true \
                         ORDER BY t.todo_timestamp".format(user_id, date_get))
         shared_done = dictfetchall(cursor)
 
         cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
-                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND t.todo_date = '{}' AND t.is_done = false \
+                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND s.task_id = t.id AND t.todo_date = '{}' AND t.is_done = false \
                         ORDER BY t.todo_timestamp".format(user_id, date_get))
         shared_undone = dictfetchall(cursor)
         
