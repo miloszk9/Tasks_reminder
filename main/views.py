@@ -3,11 +3,7 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.db import connection # To perform raw sql queries
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from .models import *
-from django.utils import timezone
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from .row_sql_dict import dictfetchall
 
 def login_page(request):
@@ -116,23 +112,31 @@ def home(request):
             cursor.execute("DELETE FROM main_task WHERE id = {} AND user_id = {}".format(task_id, user_id))
 
     # Sharing task
-    # TODO: id usera jako foreign key z friends (autousuwanie sharowanych tasków)
-    # TODO: usuwanie sharowanego taska (nie wszystkim)
+    # TODO: synchronizowac date sharowanego z akutualną (zmienia na dzisiejszą)
     if request.POST.get('share_task', False) != False:
         task_id = int(request.POST.get('share_task'))
         friend_name = request.POST.get('share_user')
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO main_share (user_id, task_id) \
-                            VALUES ((SELECT id FROM auth_user WHERE username = '{}'),{});".format(friend_name, task_id))
+            cursor.execute("INSERT INTO main_share (task_id, friendship_id) \
+                            VALUES ({}, (SELECT f.id FROM main_friends f, auth_user u \
+                            WHERE f.user1_id = {} AND f.user2_id = u.id AND u.username = '{}'));".format(task_id, user_id, friend_name))
+
+    # Sharing delete for all users
+    if request.POST.get('share_delete_all', False) != False:
+        task_id = int(request.POST.get('share_delete_all'))
+
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM main_share WHERE task_id = {} \
+                            AND task_id IN (SELECT id FROM main_task WHERE user_id = {});".format(task_id, user_id))
 
     # Sharing delete
     if request.POST.get('share_delete', False) != False:
-        task_id = int(request.POST.get('share_delete'))
-        #friend_name = request.POST.get('share_friend_id')
+        share_id = int(request.POST.get('share_delete'))
 
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM main_share WHERE task_id = {};".format(task_id))
+            cursor.execute("DELETE FROM main_share WHERE id = {} AND friendship_id = \
+                            (SELECT id FROM main_friends WHERE user2_id = {});".format(share_id, user_id))      
 
     # Getting data from database
     with connection.cursor() as cursor:
@@ -143,13 +147,13 @@ def home(request):
         db_data_undone = dictfetchall(cursor)
 
         # Getting shared tasks from the current day
-        cursor.execute("SELECT t.name, t.todo_timestamp, (SELECT username FROM auth_user WHERE id = t.user_id) AS username FROM main_task t \
-                        WHERE t.id IN (SELECT task_id FROM main_share WHERE user_id = {}) AND t.todo_date = '{}' AND t.is_done = true \
+        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
+                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND t.todo_date = '{}' AND t.is_done = true \
                         ORDER BY t.todo_timestamp".format(user_id, date_get))
         shared_done = dictfetchall(cursor)
 
-        cursor.execute("SELECT t.name, t.todo_timestamp, (SELECT username FROM auth_user WHERE id = t.user_id) AS username FROM main_task t \
-                        WHERE t.id IN (SELECT task_id FROM main_share WHERE user_id = {}) AND t.todo_date = '{}' AND t.is_done = false \
+        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
+                        WHERE s.friendship_id = f.id AND f.user2_id = {} AND u.id = f.user1_id AND t.todo_date = '{}' AND t.is_done = false \
                         ORDER BY t.todo_timestamp".format(user_id, date_get))
         shared_undone = dictfetchall(cursor)
         
@@ -209,7 +213,9 @@ def friends(request):
             friend_id = "SELECT id FROM auth_user WHERE username = '{}'".format(request.POST.get('friend_accept'))
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE main_friends SET is_accepted = true \
-                                WHERE user1_id = ({}) AND user2_id = {};".format(friend_id, user_id))
+                                WHERE user1_id = ({f_id}) AND user2_id = {u_id};\
+                                INSERT INTO main_friends (user1_id, user2_id, is_accepted)\
+                                VALUES ({u_id}, ({f_id}), true);".format(f_id = friend_id, u_id = user_id))
 
     # Getting data from the database
     with connection.cursor() as cursor:
@@ -222,7 +228,6 @@ def friends(request):
         friends_pending = dictfetchall(cursor)
 
         # Accepted friend
-        # TODO - fix: doesnt show more than one
         cursor.execute("SELECT u.username, b.birthdate FROM auth_user u, main_birthdate b \
                         WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = '{u_id}' AND is_accepted = true)\
                         OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = '{u_id}' AND is_accepted = true))\

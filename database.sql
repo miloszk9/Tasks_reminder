@@ -104,7 +104,7 @@ ALTER TABLE public.main_friends OWNER TO postgres;
 -- DROP TABLE IF EXISTS public.main_friends CASCADE;
 CREATE TABLE public.main_share (
 	id integer NOT NULL DEFAULT nextval('share_id_seq'),
-	user_id integer,
+	friendship_id integer,
 	task_id integer,
 	CONSTRAINT share_pk PRIMARY KEY (id)
 );
@@ -135,8 +135,8 @@ REFERENCES public.auth_user (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
-ALTER TABLE public.main_share ADD CONSTRAINT share_user_fkey FOREIGN KEY (user_id)
-REFERENCES public.auth_user (id) MATCH FULL
+ALTER TABLE public.main_share ADD CONSTRAINT share_user_fkey FOREIGN KEY (friendship_id)
+REFERENCES public.main_friends (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE public.main_share ADD CONSTRAINT share_task_fkey FOREIGN KEY (task_id)
