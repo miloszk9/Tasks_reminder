@@ -45,6 +45,13 @@
 
 <main class="container pt-4 mb-5 pb-1">
 
+    {% for message in messages %}
+        <!-- If user with entered username doesnt exists -->
+        <div class="card col-12 bg-danger text-light text-center mb-4">
+            <h5 class="my-1">{{ message }}</h5>
+        </div>
+    {% endfor %}
+
     <!-- Adding new friend form -->
     <div class="collapse pb-4" id="friend_add">
         <div class="card card-body">

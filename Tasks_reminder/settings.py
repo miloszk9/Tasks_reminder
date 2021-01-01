@@ -76,9 +76,9 @@ WSGI_APPLICATION = 'Tasks_reminder.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'todo_test',
+        'NAME': 'tasks_reminder',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'admin',
         'HOST': 'localhost'
     }
 }
