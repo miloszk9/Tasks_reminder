@@ -28,7 +28,7 @@ def login_page(request):
                 user_id = request.user.id
                 birthdate = register_form.cleaned_data['birthdate']
                 with connection.cursor() as cursor:
-                    cursor.execute("INSERT INTO main_birthdate (user_id, birthdate) VALUES (%s,date %s);", [user_id, birthdate])
+                    cursor.execute("INSERT INTO birthdate (user_id, birthdate) VALUES (%s,date %s);", [user_id, birthdate])
                 
                 return redirect('home')
             else:
@@ -75,7 +75,7 @@ def home(request):
         task_id = int(request.POST.get('task_change_status'))
 
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE main_task SET is_done = NOT is_done WHERE id = %s", [task_id])
+            cursor.execute("UPDATE task SET is_done = NOT is_done WHERE id = %s", [task_id])
 
     # Adding new task
     if request.POST.get('new_task'):
@@ -84,7 +84,7 @@ def home(request):
         task_date = request.POST.get('task_date', datetime.now() )
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO main_task (name, todo_timestamp, todo_date, user_id)\
+            cursor.execute("INSERT INTO task (name, todo_timestamp, todo_date, user_id)\
                             VALUES (%s,%s,%s,%s);", [task_name, task_date, task_date, user_id])
 
         # switch the day to the added task day
@@ -98,7 +98,7 @@ def home(request):
         task_date = request.POST.get('task_date', datetime.now())
         
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE main_task SET \"name\" = %s, todo_timestamp = %s,\
+            cursor.execute("UPDATE task SET \"name\" = %s, todo_timestamp = %s,\
                             todo_date = %s WHERE id = %s;", [task_name, task_date, task_date, task_id])
 
         # switch the day to the added task day
@@ -109,7 +109,7 @@ def home(request):
     if request.POST.get('delete_task', False) != False:
         task_id = int(request.POST.get('delete_task'))
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM main_task WHERE id = %s AND user_id = %s", [task_id, user_id])
+            cursor.execute("DELETE FROM task WHERE id = %s AND user_id = %s", [task_id, user_id])
 
     # Sharing task
     # TODO: synchronizowac date sharowanego z akutualną (zmienia na dzisiejszą)
@@ -118,8 +118,8 @@ def home(request):
         friend_name = request.POST.get('share_user')
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO main_share (task_id, friendship_id) \
-                            VALUES (%s, (SELECT f.id FROM main_friends f, auth_user u \
+            cursor.execute("INSERT INTO task_share (task_id, friendship_id) \
+                            VALUES (%s, (SELECT f.id FROM friends f, auth_user u \
                             WHERE f.user1_id = %s AND f.user2_id = u.id AND u.username = %s));", [task_id, user_id, friend_name])
 
     # Sharing delete for all users
@@ -127,46 +127,46 @@ def home(request):
         task_id = int(request.POST.get('share_delete_all'))
 
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM main_share WHERE task_id = %s \
-                            AND task_id IN (SELECT id FROM main_task WHERE user_id = %s);", [task_id, user_id])
+            cursor.execute("DELETE FROM task_share WHERE task_id = %s \
+                            AND task_id IN (SELECT id FROM task WHERE user_id = %s);", [task_id, user_id])
 
     # Sharing delete
     if request.POST.get('share_delete', False) != False:
         share_id = int(request.POST.get('share_delete'))
 
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM main_share WHERE id = %s AND friendship_id = \
-                            (SELECT id FROM main_friends WHERE user2_id = %s);", [share_id, user_id])      
+            cursor.execute("DELETE FROM task_share WHERE id = %s AND friendship_id = \
+                            (SELECT id FROM friends WHERE user2_id = %s);", [share_id, user_id])      
 
     # Getting data from database
     with connection.cursor() as cursor:
         # Getting Tasks from the current day
-        cursor.execute("SELECT * FROM main_task WHERE user_id = %s AND todo_date = %s AND is_done = true ORDER BY todo_timestamp", [user_id, date_get])
+        cursor.execute("SELECT * FROM task WHERE user_id = %s AND todo_date = %s AND is_done = true ORDER BY todo_timestamp", [user_id, date_get])
         db_data_done = dictfetchall(cursor)
-        cursor.execute("SELECT * FROM main_task WHERE user_id = %s AND todo_date = %s AND is_done = false ORDER BY todo_timestamp", [user_id, date_get])
+        cursor.execute("SELECT * FROM task WHERE user_id = %s AND todo_date = %s AND is_done = false ORDER BY todo_timestamp", [user_id, date_get])
         db_data_undone = dictfetchall(cursor)
 
         # Getting shared tasks from the current day
-        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
+        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM task t, auth_user u, friends f, task_share s\
                         WHERE s.friendship_id = f.id AND f.user2_id = %s AND u.id = f.user1_id AND s.task_id = t.id AND t.todo_date = %s AND t.is_done = true \
                         ORDER BY t.todo_timestamp", [user_id, date_get])
         shared_done = dictfetchall(cursor)
 
-        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM main_task t, auth_user u, main_friends f, main_share s\
+        cursor.execute("SELECT s.id, t.name, t.todo_timestamp, u.username FROM task t, auth_user u, friends f, task_share s\
                         WHERE s.friendship_id = f.id AND f.user2_id = %s AND u.id = f.user1_id AND s.task_id = t.id AND t.todo_date = %s AND t.is_done = false \
                         ORDER BY t.todo_timestamp", [user_id, date_get])
         shared_undone = dictfetchall(cursor)
         
         # Friend nicknames
         cursor.execute("SELECT u.username FROM auth_user u\
-                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = %s AND is_accepted = true)\
-                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = %s AND is_accepted = true))", [user_id, user_id])
+                        WHERE (u.id IN (SELECT user2_id FROM friends WHERE user1_id = %s AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM friends WHERE user2_id = %s AND is_accepted = true))", [user_id, user_id])
         friend_nick = cursor.fetchall()
 
         # Friend's birthday
-        cursor.execute("SELECT u.username FROM auth_user u, main_birthdate b \
-                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = %s AND is_accepted = true)\
-                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = %s AND is_accepted = true))\
+        cursor.execute("SELECT u.username FROM auth_user u, birthdate b \
+                        WHERE (u.id IN (SELECT user2_id FROM friends WHERE user1_id = %s AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM friends WHERE user2_id = %s AND is_accepted = true))\
                         AND u.id = b.user_id AND CAST(b.birthdate as text) ~ %s", [user_id, user_id, str(date_get)[4:10]])
         friend_bday = cursor.fetchall()
 
@@ -198,20 +198,23 @@ def friends(request):
                 cursor.execute('SELECT id FROM auth_user WHERE username = %s;', [friend_username])
                 friend_id = cursor.fetchone()
                 if friend_id is not None: # Checks if entered username is valied
-                    cursor.execute('SELECT id FROM main_friends WHERE (user1_id = %s AND user2_id = %s) \
-                                    OR (user1_id = %s AND user2_id = %s);', [user_id, friend_id[0], user_id, friend_id[0]])
-                    if len(cursor.fetchall()) == 0: # Checking if two accounts are not already in freinds table
-                        cursor.execute("INSERT INTO main_friends (user1_id, user2_id)\
-                                        VALUES (%s, %s);", [user_id, friend_id[0]])
+                    if friend_id[0] == user_id:
+                        messages.error(request, 'You cannot add yourself.')
                     else:
-                        messages.error(request, 'User already added.')
+                        cursor.execute('SELECT id FROM friends WHERE (user1_id = %s AND user2_id = %s) \
+                                        OR (user1_id = %s AND user2_id = %s);', [user_id, friend_id[0], user_id, friend_id[0]])
+                        if len(cursor.fetchall()) == 0: # Checking if two accounts are not already in freinds table
+                            cursor.execute("INSERT INTO friends (user1_id, user2_id)\
+                                            VALUES (%s, %s);", [user_id, friend_id[0]])
+                        else:
+                            messages.error(request, 'User already added.')
                 else:
                     messages.error(request, 'User not found.')
         
         if request.POST.get('friend_delete'):
             friend_username = request.POST.get('friend_delete')
             with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM main_friends WHERE \
+                cursor.execute("DELETE FROM friends WHERE \
                                 (user1_id = %s AND user2_id = (SELECT id FROM auth_user WHERE username = %s)) OR \
                                 (user1_id = (SELECT id FROM auth_user WHERE username = %s) AND user2_id = %s);",
                                 [user_id, friend_username, friend_username, user_id])
@@ -219,25 +222,25 @@ def friends(request):
         if request.POST.get('friend_accept'):
             friend_id = request.POST.get('friend_accept')
             with connection.cursor() as cursor:
-                cursor.execute("UPDATE main_friends SET is_accepted = true \
+                cursor.execute("UPDATE friends SET is_accepted = true \
                                 WHERE user1_id = (SELECT id FROM auth_user WHERE username = %s) AND user2_id = %s;\
-                                INSERT INTO main_friends (user1_id, user2_id, is_accepted)\
+                                INSERT INTO friends (user1_id, user2_id, is_accepted)\
                                 VALUES (%s, (SELECT id FROM auth_user WHERE username = %s), true);", [friend_id, user_id, user_id, friend_id])
 
     # Getting data from the database
     with connection.cursor() as cursor:
         # Friend request sent to user
-        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user1_id FROM main_friends WHERE user2_id = %s AND is_accepted = false)", [user_id])
+        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user1_id FROM friends WHERE user2_id = %s AND is_accepted = false)", [user_id])
         friends_request = dictfetchall(cursor)
 
         # Friend request sent by user
-        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user2_id FROM main_friends WHERE user1_id = %s AND is_accepted = false)", [user_id])
+        cursor.execute("SELECT username FROM auth_user WHERE id IN (SELECT user2_id FROM friends WHERE user1_id = %s AND is_accepted = false)", [user_id])
         friends_pending = dictfetchall(cursor)
 
         # Accepted friend
-        cursor.execute("SELECT u.username, b.birthdate FROM auth_user u, main_birthdate b \
-                        WHERE (u.id IN (SELECT user2_id FROM main_friends WHERE user1_id = %s AND is_accepted = true)\
-                        OR u.id IN (SELECT user1_id FROM main_friends WHERE user2_id = %s AND is_accepted = true))\
+        cursor.execute("SELECT u.username, b.birthdate FROM auth_user u, birthdate b \
+                        WHERE (u.id IN (SELECT user2_id FROM friends WHERE user1_id = %s AND is_accepted = true)\
+                        OR u.id IN (SELECT user1_id FROM friends WHERE user2_id = %s AND is_accepted = true))\
                         AND u.id = b.user_id", [user_id, user_id])
         friends = dictfetchall(cursor)
 

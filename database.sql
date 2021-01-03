@@ -2,20 +2,10 @@
 -- pgModeler  version: 0.9.3-beta1
 -- PostgreSQL version: 12.0
 -- Project Site: pgmodeler.io
--- Model Author: ---
+-- Model Author: Miłosz Kaszuba
 
--- Database creation must be performed outside a multi lined SQL file. 
--- These commands were put in this file only as a convenience.
-
-CREATE SEQUENCE public.friends_id_seq
-	INCREMENT BY 1
-	MINVALUE 0
-	MAXVALUE 2147483647
-	START WITH 1
-	CACHE 1
-	NO CYCLE
-	OWNED BY NONE;
-
+-- object: public.task_id_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.task_id_seq CASCADE;
 CREATE SEQUENCE public.task_id_seq
 	INCREMENT BY 1
 	MINVALUE 0
@@ -25,6 +15,12 @@ CREATE SEQUENCE public.task_id_seq
 	NO CYCLE
 	OWNED BY NONE;
 
+-- ddl-end --
+ALTER SEQUENCE public.task_id_seq OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.birthdate_id_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.birthdate_id_seq CASCADE;
 CREATE SEQUENCE public.birthdate_id_seq
 	INCREMENT BY 1
 	MINVALUE 0
@@ -34,6 +30,27 @@ CREATE SEQUENCE public.birthdate_id_seq
 	NO CYCLE
 	OWNED BY NONE;
 
+-- ddl-end --
+ALTER SEQUENCE public.birthdate_id_seq OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.friends_id_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.friends_id_seq CASCADE;
+CREATE SEQUENCE public.friends_id_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 2147483647
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+
+-- ddl-end --
+ALTER SEQUENCE public.friends_id_seq OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.share_id_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.share_id_seq CASCADE;
 CREATE SEQUENCE public.share_id_seq
 	INCREMENT BY 1
 	MINVALUE 0
@@ -42,21 +59,14 @@ CREATE SEQUENCE public.share_id_seq
 	CACHE 1
 	NO CYCLE
 	OWNED BY NONE;
--- ddl-end --
-ALTER SEQUENCE public.birthdate_id_seq OWNER TO postgres;
 
--- ddl-end --
-ALTER SEQUENCE public.task_id_seq OWNER TO postgres;
 -- ddl-end --
 ALTER SEQUENCE public.share_id_seq OWNER TO postgres;
-
--- ddl-end --
-ALTER SEQUENCE public.friends_id_seq OWNER TO postgres;
 -- ddl-end --
 
--- object: public.main_task | type: TABLE --
--- DROP TABLE IF EXISTS public.main_task CASCADE;
-CREATE TABLE public.main_task (
+-- object: public.task | type: TABLE --
+-- DROP TABLE IF EXISTS public.task CASCADE;
+CREATE TABLE public.task (
 	id integer NOT NULL DEFAULT nextval('task_id_seq'),
 	user_id integer,
 	name char(100) NOT NULL,
@@ -65,30 +75,28 @@ CREATE TABLE public.main_task (
 	is_done boolean DEFAULT False,
 	todo_date date,
 	CONSTRAINT task_pk PRIMARY KEY (id)
+
 );
 -- ddl-end --
-ALTER TABLE public.main_task OWNER TO postgres;
+ALTER TABLE public.task OWNER TO postgres;
 -- ddl-end --
 
--- object: public.main_holidays | type: TABLE --
--- DROP TABLE IF EXISTS public.main_holidays CASCADE;
-CREATE TABLE public.main_birthdate (
-	id integer NOT NULL DEFAULT nextval('birthdate_id_seq'),
+-- object: public.birthdate | type: TABLE --
+-- DROP TABLE IF EXISTS public.birthdate CASCADE;
+CREATE TABLE public.birthdate (
+	id integer NOT NULL DEFAULT nextval('public.birthdate_id_seq'::regclass),
 	birthdate date NOT NULL,
-    user_id integer,
+	user_id integer,
 	CONSTRAINT birthdate_pk PRIMARY KEY (id)
 
 );
 -- ddl-end --
-ALTER TABLE public.main_birthdate OWNER TO postgres;
+ALTER TABLE public.birthdate OWNER TO postgres;
 -- ddl-end --
 
--- object: public.task_id_seq | type: SEQUENCE --
--- DROP SEQUENCE IF EXISTS public.task_id_seq CASCADE;
-
--- object: public.main_friends | type: TABLE --
--- DROP TABLE IF EXISTS public.main_friends CASCADE;
-CREATE TABLE public.main_friends (
+-- object: public.friends | type: TABLE --
+-- DROP TABLE IF EXISTS public.friends CASCADE;
+CREATE TABLE public.friends (
 	id integer NOT NULL DEFAULT nextval('friends_id_seq'),
 	user1_id integer,
 	user2_id integer,
@@ -97,48 +105,75 @@ CREATE TABLE public.main_friends (
 
 );
 -- ddl-end --
-ALTER TABLE public.main_friends OWNER TO postgres;
+ALTER TABLE public.friends OWNER TO postgres;
 -- ddl-end --
 
--- object: public.main_friends | type: TABLE --
--- DROP TABLE IF EXISTS public.main_friends CASCADE;
-CREATE TABLE public.main_share (
-	id integer NOT NULL DEFAULT nextval('share_id_seq'),
+-- object: public.task_share | type: TABLE --
+-- DROP TABLE IF EXISTS public.task_share CASCADE;
+CREATE TABLE public.task_share (
+	id integer NOT NULL DEFAULT nextval('public.share_id_seq'::regclass),
 	friendship_id integer,
 	task_id integer,
-	CONSTRAINT share_pk PRIMARY KEY (id)
+	CONSTRAINT task_share_pk PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public.main_share OWNER TO postgres;
+ALTER TABLE public.task_share OWNER TO postgres;
 -- ddl-end --
 
--- object: user_id_fkey | type: CONSTRAINT --
--- ALTER TABLE public.main_task DROP CONSTRAINT IF EXISTS user_id_fkey CASCADE;
-ALTER TABLE public.main_task ADD CONSTRAINT user_id_fkey FOREIGN KEY (user_id)
+-- object: task_fk | type: CONSTRAINT --
+-- ALTER TABLE public.task DROP CONSTRAINT IF EXISTS task_fk CASCADE;
+ALTER TABLE public.task ADD CONSTRAINT task_fk FOREIGN KEY (user_id)
 REFERENCES public.auth_user (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
-
-
--- object: friends_user1_fkey | type: CONSTRAINT --
--- ALTER TABLE public.main_friends DROP CONSTRAINT IF EXISTS friends_user1_fkey CASCADE;
-ALTER TABLE public.main_friends ADD CONSTRAINT friends_user1_fkey FOREIGN KEY (user1_id)
+-- object: birthdate_fk | type: CONSTRAINT --
+-- ALTER TABLE public.birthdate DROP CONSTRAINT IF EXISTS birthdate_fk CASCADE;
+ALTER TABLE public.birthdate ADD CONSTRAINT birthdate_fk FOREIGN KEY (user_id)
 REFERENCES public.auth_user (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: friends_user2_fkey | type: CONSTRAINT --
--- ALTER TABLE public.main_friends DROP CONSTRAINT IF EXISTS friends_user2_fkey CASCADE;
-ALTER TABLE public.main_friends ADD CONSTRAINT friends_user2_fkey FOREIGN KEY (user2_id)
+-- object: friend_user1_fk | type: CONSTRAINT --
+-- ALTER TABLE public.friends DROP CONSTRAINT IF EXISTS friend_user1_fk CASCADE;
+ALTER TABLE public.friends ADD CONSTRAINT friend_user1_fk FOREIGN KEY (user1_id)
 REFERENCES public.auth_user (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
-ALTER TABLE public.main_share ADD CONSTRAINT share_user_fkey FOREIGN KEY (friendship_id)
-REFERENCES public.main_friends (id) MATCH FULL
-ON DELETE CASCADE ON UPDATE CASCADE;
+-- object: friend_user2_fk | type: CONSTRAINT --
+-- ALTER TABLE public.friends DROP CONSTRAINT IF EXISTS friend_user2_fk CASCADE;
+ALTER TABLE public.friends ADD CONSTRAINT friend_user2_fk FOREIGN KEY (user2_id)
+REFERENCES public.auth_user (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
 
-ALTER TABLE public.main_share ADD CONSTRAINT share_task_fkey FOREIGN KEY (task_id)
-REFERENCES public.main_task (id) MATCH FULL
+-- object: share_task_fk | type: CONSTRAINT --
+-- ALTER TABLE public.task_share DROP CONSTRAINT IF EXISTS share_task_fk CASCADE;
+ALTER TABLE public.task_share ADD CONSTRAINT share_task_fk FOREIGN KEY (task_id)
+REFERENCES public.task (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: share_friendship_fk | type: CONSTRAINT --
+-- ALTER TABLE public.task_share DROP CONSTRAINT IF EXISTS share_friendship_fk CASCADE;
+ALTER TABLE public.task_share ADD CONSTRAINT share_friendship_fk FOREIGN KEY (friendship_id)
+REFERENCES public.friends (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- Trigger - checks if task is shared already
+create function share_check() returns trigger as '
+declare
+    row task_share%rowtype;
+begin
+    for row in SELECT id,friendship_id,task_id from task_share loop
+        if NEW.friendship_id = row.friendship_id and NEW.task_id = row.task_id THEN
+			return NULL;
+        end if;
+    END LOOP;
+	return NEW;
+end;
+' language 'plpgsql';
+
+create trigger share_trigger before insert on task_share for each row execute procedure share_check();
