@@ -93,5 +93,10 @@
             input.type = "date";
         }
     }
+
+    // Set minimal and maximal date of birth
+    birthdate = document.getElementById('id_birthdate');
+    birthdate.min = "1999-01-01";
+    birthdate.max = "2021-01-01";
 </script>
 {% endblock content %}
