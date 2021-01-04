@@ -177,3 +177,17 @@ end;
 ' language 'plpgsql';
 
 create trigger share_trigger before insert on task_share for each row execute procedure share_check();
+
+-- Function - checks if user with passed username exists - if exists: returns id; else: null
+create function user_id(varchar(150)) returns integer as '
+declare
+    row auth_user%rowtype;
+begin
+    for row in SELECT * from auth_user loop
+        if $1 = row.username THEN
+			return row.id;
+        end if;
+    END LOOP;
+	return NULL;
+end;
+' language 'plpgsql';

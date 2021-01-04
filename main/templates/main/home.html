@@ -217,6 +217,11 @@
             time = date.substring(0, 16);
             task.value = time;
         }
+        
+        // Enable tooltips
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     </script>
 </main>
 {% endblock content%}

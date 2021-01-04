@@ -112,15 +112,14 @@ def home(request):
             cursor.execute("DELETE FROM task WHERE id = %s AND user_id = %s", [task_id, user_id])
 
     # Sharing task
-    # TODO: synchronizowac date sharowanego z akutualną (zmienia na dzisiejszą)
     if request.POST.get('share_task', False) != False:
         task_id = int(request.POST.get('share_task'))
         friend_name = request.POST.get('share_user')
 
         with connection.cursor() as cursor:
             cursor.execute("INSERT INTO task_share (task_id, friendship_id) \
-                            VALUES (%s, (SELECT f.id FROM friends f, auth_user u \
-                            WHERE f.user1_id = %s AND f.user2_id = u.id AND u.username = %s));", [task_id, user_id, friend_name])
+                            VALUES (%s, (SELECT id FROM friends\
+                            WHERE user1_id = %s AND user2_id = username_id(%s)));", [task_id, user_id, friend_name])
 
     # Sharing delete for all users
     if request.POST.get('share_delete_all', False) != False:
@@ -195,7 +194,7 @@ def friends(request):
         if request.POST.get('friend_add'):            
             with connection.cursor() as cursor:
                 friend_username = request.POST.get('friend_name')
-                cursor.execute('SELECT id FROM auth_user WHERE username = %s;', [friend_username])
+                cursor.execute('SELECT username_id(%s);', [friend_username])
                 friend_id = cursor.fetchone()
                 if friend_id is not None: # Checks if entered username is valied
                     if friend_id[0] == user_id:
@@ -215,17 +214,17 @@ def friends(request):
             friend_username = request.POST.get('friend_delete')
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM friends WHERE \
-                                (user1_id = %s AND user2_id = (SELECT id FROM auth_user WHERE username = %s)) OR \
-                                (user1_id = (SELECT id FROM auth_user WHERE username = %s) AND user2_id = %s);",
+                                (user1_id = %s AND user2_id = username_id(%s)) OR \
+                                (user1_id = username_id(%s) AND user2_id = %s);",
                                 [user_id, friend_username, friend_username, user_id])
 
         if request.POST.get('friend_accept'):
-            friend_id = request.POST.get('friend_accept')
+            friend_username = request.POST.get('friend_accept')
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE friends SET is_accepted = true \
-                                WHERE user1_id = (SELECT id FROM auth_user WHERE username = %s) AND user2_id = %s;\
+                                WHERE user1_id = username_id(%s) AND user2_id = %s;\
                                 INSERT INTO friends (user1_id, user2_id, is_accepted)\
-                                VALUES (%s, (SELECT id FROM auth_user WHERE username = %s), true);", [friend_id, user_id, user_id, friend_id])
+                                VALUES (%s, username_id(%s), true);", [friend_username, user_id, user_id, friend_username])
 
     # Getting data from the database
     with connection.cursor() as cursor:
