@@ -134,7 +134,7 @@ def home(request):
         share_id = int(request.POST.get('share_delete'))
 
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM task_share WHERE id = %s AND friendship_id = \
+            cursor.execute("DELETE FROM task_share WHERE id = %s AND friendship_id IN \
                             (SELECT id FROM friends WHERE user2_id = %s);", [share_id, user_id])      
 
     # Getting data from database
