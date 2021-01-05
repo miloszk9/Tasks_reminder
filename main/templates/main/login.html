@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<nav class="navbar navbar-expand navbar-dark bg-dark">
+<nav class="navbar navbar-expand navbar-dark bg-dark py-1">
     <div class="container">
         <span class="navbar-brand">
             <span class="navbar-brand">Tasks reminder</span>
@@ -33,6 +33,12 @@
                     <label for="example-text-input" class="col-5 col-form-label">Email</label>
                     <div class="col-7">
                         {{register_form.email}}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-5 col-form-label">Day of birth</label>
+                    <div class="col-7">
+                        {{register_form.birthdate}}
                     </div>
                 </div>
                 <div class="form-group row">
@@ -80,9 +86,17 @@
 </main>
 
 <script>
-    // To add class to inputs in registration and login form
+    // To add class 'form-control' to inputs in registration and login form
     for (var input of document.getElementsByTagName('input')){
         input.classList += 'form-control';
+        if (input.name == "birthdate"){
+            input.type = "date";
+        }
     }
+
+    // Set minimal and maximal date of birth
+    birthdate = document.getElementById('id_birthdate');
+    birthdate.min = "1999-01-01";
+    birthdate.max = "2021-01-01";
 </script>
 {% endblock content %}

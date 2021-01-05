@@ -24,7 +24,6 @@ SECRET_KEY = '8jm%6599^@arn8wff%6^d4ds(x6qiin#+kjl1=1spua)44!w7r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -76,8 +75,11 @@ WSGI_APPLICATION = 'Tasks_reminder.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'tasks_reminder',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost'
     }
 }
 

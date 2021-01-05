@@ -19,17 +19,24 @@
     <link rel="stylesheet" type="text/css" href="{% static 'main/main.css' %}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <style>
+        body {
+            background: url('https://images.pexels.com/photos/733857/pexels-photo-733857.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+
 </head>
 <body>
     {% block content %}
     {% endblock content %}
 
     <footer class="page-footer font-small fixed-bottom bg-dark text-light">
-        <div class="footer-copyright text-center py-3">
-            © 2020 Copyright: Miłosz Kaszuba |
-            <!-- Shorten version for mobile users -->
-            <a class="d-none d-lg-inline" href="https://github.com/miloszk9/Tasks_reminder" target="_blank">GitHub project page</a>
-            <a class="d-lg-none" href="https://github.com/miloszk9/Tasks_reminder" target="_blank">GitHub</a>
+        <div class="footer-copyright text-center py-2">
+            © 2020 Copyright: Miłosz Kaszuba
         </div>
     </footer>
 

@@ -1,0 +1,241 @@
+{% extends "main/index.html" %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand navbar-dark bg-dark py-1">
+    <div class="container">
+        <div class="navbar-nav">
+            <a href="{% url 'home' %}">
+                <span class="navbar-brand">Tasks reminder</span>
+            </a>
+        </div>
+
+        <!-- User section: username and logging out button -->
+        <div class="navbar-nav ml-auto pl-1" id="user_section">
+            <ul class="navbar-nav">
+                <li class="nav-item mr-2 text-light mt-auto mb-auto d-none d-md-block">
+                    <span>Hello, {{request.user}}</span>
+                </li>
+                    
+                <!-- Calendar button -->
+                <li class="nav-item d-none d-lg-inline">
+                    <a href="{% url 'home' %}"><button class="btn btn-outline-light">Calendar</button></a>
+                </li>
+                <li class="nav-item d-lg-none">
+                    <a href="{% url 'home' %}"><button class="btn btn-outline-light border-0">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-5.146-5.146l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708z"/>
+                        </svg>
+                    </button></a>
+                </li>
+
+                <!-- Log out button -->
+                <li class="nav-item d-none d-lg-inline">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light ml-1">Sign out</button></a>
+                </li>
+                <li class="nav-item d-lg-none">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2v13h1V2.5a.5.5 0 0 0-.5-.5H11zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+                        </svg>
+                    </button></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container pt-4 mb-5 pb-1">
+
+    {% for message in messages %}
+        <!-- If user with entered username doesnt exists -->
+        <div class="card col-12 bg-danger text-light text-center mb-4">
+            <h5 class="my-1">{{ message }}</h5>
+        </div>
+    {% endfor %}
+
+    <!-- Add friend modal -->
+    <div class="modal fade" id="friend_add" tabindex="-1" aria-labelledby="friend_add" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="friend_add">Add friend</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="input_username" class="col-4 col-form-label">Friend's nickname</label>
+                            <div class="col-8">
+                                <input class="form-control" name="friend_name" type="text" id="input_username">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" value="1" name="friend_add">Send request</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Friends table-->
+        <div class="table card col-12 col-lg-6 px-0">
+            <!-- Accepted friends table -->
+            <table class="text-center" style="width: 100%">
+        
+                <colgroup>
+                    <col span="1" style="width: 42%;">
+                    <col span="1" style="width: 42%;">
+                    <col span="1" style="width: 16%;">
+                </colgroup>
+        
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Friend list</th>
+                        <th scope="col">Birthdate</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    {% for record in friends %}
+                        <tr>
+                            <td class="align-middle">
+                                <h5 class="text-break my-0">
+                                    {{record.username}}
+                                </h5>
+                            </td>
+                            <td class="align-middle">
+                                <h5 class="text-break my-0">
+                                    {{record.birthdate}}
+                                </h5>
+                            </td>
+                            <td class="align-middle px-1">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="friend_delete" value={{record.username}}>
+                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        </svg> 
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+        
+                    <!-- Adding new friend button -->
+                    <tr>
+                        <td colspan="3" class="text-center">
+                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#friend_add">
+                                Add new friend
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table card col-12 col-lg-6 px-0">
+            <!-- Table with requests sent to user -->
+            <table class="text-center" style="width: 100%">
+        
+                <colgroup>
+                    <col span="1" style="width: 84%;">
+                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 8%;">
+                </colgroup>
+        
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Recived friend requests</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    {% for record in friends_request %}
+                        <tr>
+                            <td class="align-middle">
+                                <h5 class="text-break my-0">
+                                    {{record.username}}
+                                </h5>
+                            </td>
+                            <td class="align-middle px-1">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="friend_accept" value={{record.username}}>
+                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg> 
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="align-middle px-1">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="friend_delete" value={{record.username}}>
+                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Table with requests sent by user -->
+            <table class="text-center mt-2" style="width: 100%">
+        
+                <colgroup>
+                    <col span="1" style="width: 84%;">
+                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 8%;">
+                </colgroup>
+        
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Sent friend requests</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    {% for record in friends_pending %}
+                        <tr>
+                            <td class="align-middle">
+                                <h5 class="text-break my-0">
+                                    {{record.username}}
+                                </h5>
+                            </td>
+                            <td colspan="2" class="align-middle px-1">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="friend_delete" value={{record.username}}>
+                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        </svg> 
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+        
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock content %}

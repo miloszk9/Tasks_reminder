@@ -2,21 +2,21 @@
 
 {% block content %}
 
-<nav class="navbar navbar-expand navbar-dark bg-dark">
+<nav class="navbar navbar-expand navbar-dark bg-dark py-0">
     <div class="container">
-        <span class="navbar-brand mr-auto">
-            <a class="navbar-brand" href="{% url 'home' %}">
+        <span class="navbar-nav">
+            <a class="navbar-brand mr-1" href="{% url 'home' %}">
                 <span class="navbar-brand d-block d-md-none">TR</span>
                 <span class="navbar-brand d-none d-md-block">Tasks reminder</span>
             </a>
         </span>
 
         <!-- Selected date -->
-        <ul class="navbar-nav navbar-dark">
+        <ul class="navbar-nav navbar-dark ml-auto">
             <li class="nav-item form-inline">
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-light border-0 mr-1 px-1" name="previous" value={{date_change}}>
+                    <button type="submit" class="btn btn-sm btn-outline-light border-0 mr-1 px-1" name="date_change" value={{date_change|add:-1}}>
                         <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-left-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5.5a.5.5 0 0 0 0-1H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5z"/>
                         </svg>
@@ -24,12 +24,13 @@
                 </form>
             </li>
             <li class="nav-item text-light form-inline mx-1 mt-1">
-                <h3>{{date.day}}/{{date.month}}/{{date.year}}</h3>
+                <span class="h5 d-block d-sm-none text-center">{{date.day}}/{{date.month}}<br>{{date.year}}</span>
+                <span class="h4 d-none d-sm-block">{{date.day}}/{{date.month}}/{{date.year}}</span>
             </li>
             <li class="nav-item form-inline">
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-light border-0 ml-1 px-1" name="next" value={{date_change}}>
+                    <button type="submit" class="btn btn-sm btn-outline-light border-0 ml-1 px-1" name="date_change" value={{date_change|add:1}}>
                         <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-right-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-11.5.5a.5.5 0 0 1 0-1h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5z"/>
                         </svg>
@@ -44,11 +45,27 @@
                 <li class="nav-item mr-2 text-light mt-auto mb-auto d-none d-md-block">
                     <span>Hello, {{request.user}}</span>
                 </li>
+
+                <!-- Friends button -->
                 <li class="nav-item d-none d-lg-inline">
-                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light">Sign out</button></a>
+                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light">Friends</button></a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0">
+                    <a href="{% url 'friends' %}"><button class="btn btn-outline-light border-0 pl-1 pr-1">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                    </button></a>
+                </li>
+
+                <!-- Log out button -->
+                <li class="nav-item d-none d-lg-inline">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light ml-1">Sign out</button></a>
+                </li>
+                <li class="nav-item d-lg-none">
+                    <a href="{% url 'logout' %}"><button class="btn btn-outline-light border-0 pl-1 pr-1">
                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-door-open-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2v13h1V2.5a.5.5 0 0 0-.5-.5H11zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
                         </svg>
@@ -61,36 +78,48 @@
 
 <main class="container pt-4 mb-5 pb-1">
 
-    <!-- Adding new task form -->
-    <div class="collapse pb-4" id="task_add">
-        <div class="card card-body">
-            <div class="row pb-2">
-                <h4 class="card-title ml-3 mt-2">Create new task</h5>            
-                <!-- Closing collapsed window -->
-                <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
-            </div>
+    <!-- Firend's birthday -->
+    {% if friend_bday %}
+    <div class="alert alert-success text-center" role="alert">
+        Birthday: 
+        {% for name in friend_bday %}
+            {{name.0}} 
+        {% endfor %}
+    </div>
+    {% endif %}
 
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-group row">
-                    <label for="example-text-input" class="col-4 col-form-label">Task</label>
-                    <div class="col-8">
-                        <input class="form-control" name="task_name" type="text" id="example-text-input">
-                    </div>
+    <!-- Add new task modal -->
+    <div class="modal fade" id="task_add" tabindex="-1" aria-labelledby="task_add" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="task_add">Create new task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="form-group row">
-                    <label for="example-datetime-local-input" class="col-4 col-form-label">Date and time</label>
-                    <div class="col-8">
-                        <input id='input_date' class="form-control" name="task_date" type="datetime-local" value='0' id="example-datetime-local-input">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="example-text-input" class="col-4 col-form-label">Task</label>
+                            <div class="col-8">
+                                <input class="form-control" name="task_name" type="text" id="example-text-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="example-datetime-local-input" class="col-4 col-form-label">Date and time</label>
+                            <div class="col-8">
+                                <input id='input_date' class="form-control" name="task_date" type="datetime-local" value='0' id="example-datetime-local-input">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <button class="btn btn-outline-success btn-block" type="submit" value="1" name="new_task">Save</button>
-            </form>
+                    <div class="modal-footer">                        
+                        <button type="submit" value="1" name="new_task" class="btn btn-success">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     
@@ -103,102 +132,35 @@
                 <colgroup>
                     <col span="1" style="width: 64%;">
                     <col span="1" style="width: 12%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
                 </colgroup>
         
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Undone tasks</th>
                         <th scope="col">Time</th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
+                        <th scope="col" colspan="4" >Options</th>
                     </tr>
                 </thead>
         
                 <tbody>
+                    <!-- User's done tasks -->
                     {% for record in db_data_undone %}
-                        <tr>
-                            <td class="align-middle">
-                                <h5 class="text-break my-0">
-                                    {{record.name}}
-                                </h5>
-                            </td>
-                            <td class="align-middle">
-                                <!-- Changed from record.date.hour:record.date.minute because it didnt show zeros. E.g. not 07:00, but 7:0 -->
-                                <h4 class="my-0">{{record.date.isoformat.11}}{{record.date.isoformat.12}}:{{record.date.isoformat.14}}{{record.date.isoformat.15}}</h4>
-                            </td>
-                            <td class="align-middle px-1">
-                                <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
-                                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                                    </svg>
-                                </button>
-                            </td>
-                            <td class="align-middle px-1">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="date_change" value={{date_change}}>
-                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="delete_task" value={{record.id}}>
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"></path>
-                                        </svg> 
-                                    </button>
-                                </form>
-                            </td>
-                            <td class="align-middle px-1">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="date_change" value={{date_change}}>
-                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="task_done" value={{record.id}}>
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                        </svg>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-        
-                        <!-- Editing task form -->
-                        <div class="collapse pb-4" id="task_edit{{record.id}}">
-                            <div class="card card-body">
-                                <div class="row pb-2">
-                                    <h4 class="card-title ml-3 mt-2">Edit task</h4>            
-                                    <!-- Closing collapsed window -->
-                                    <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                            <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-        
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <div class="form-group row">
-                                        <label for="text-input{{record.id}}" class="col-4 col-form-label">Task</label>
-                                        <div class="col-8">
-                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value='{{record.name}}'>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for={{record.date.isoformat}} class="col-4 col-form-label">Date and time</label>
-                                        <div class="col-8">
-                                            <input id={{record.date.isoformat}} class="form-control input_date_edit" name="task_date" type="datetime-local" value={{record.date.isoformat}}>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline-success" type="submit" value={{record.id}} name="edit_task">Save</button>
-                                </form>
-                            </div>
-                        </div>
+                        {% include 'main/task_table.html' %}
+                    {% endfor %}
+
+                    <!-- Done shared tasks -->
+                    {% for record in shared_undone %}
+                        {% include 'main/shared_task.html' %}
                     {% endfor %}
         
                     <!-- Adding new task button -->
                     <tr>
-                        <td colspan="5" class="text-center">
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
+                        <td colspan="6" class="text-center">
+                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#task_add">
                                 Add new task
                             </button>
                         </td>
@@ -214,95 +176,28 @@
                 <colgroup>
                     <col span="1" style="width: 64%;">
                     <col span="1" style="width: 12%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
                 </colgroup>
 
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Done tasks</th>
                         <th scope="col">Time</th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
+                        <th scope="col" colspan="4" >Options</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- User's done tasks -->
                     {% for record in db_data_done %}
-                        <tr>
-                            <td class="align-middle">
-                                <h5 class="text-break my-0">
-                                    {{record.name}}
-                                </h5>
-                            </td>
-                            <td class="align-middle">
-                                <!-- Changed from record.date.hour:record.date.minute because it didnt show zeros. E.g. not 07:00, but 7:0 -->
-                                <h4 class="my-0">{{record.date.isoformat.11}}{{record.date.isoformat.12}}:{{record.date.isoformat.14}}{{record.date.isoformat.15}}</h4>
-                            </td>
-                            <td class="align-middle px-1">
-                                <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
-                                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                                    </svg>
-                                </button>
-                            </td>
-                            <td class="align-middle px-1">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="date_change" value={{date_change}}>
-                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="delete_task" value={{record.id}}>
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"></path>
-                                        </svg> 
-                                    </button>
-                                </form>
-                            </td>
-                            <td class="align-middle px-1">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="date_change" value={{date_change}}>
-                                    <button class="btn btn-outline-dark border-0 pt-lg-1 px-2" type="submit" name="task_done" value={{record.id}}>
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-                                        </svg>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                        {% include 'main/task_table.html' %}
+                    {% endfor %}
 
-                        <!-- Task edit form -->
-                        <div class="collapse pb-4" id="task_edit{{record.id}}">
-                            <div class="card card-body">
-                                <div class="row pb-2">
-                                    <h4 class="card-title ml-3 mt-2">Edit task</h4>            
-                                    <!-- Closing collapsed window -->
-                                    <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_edit{{record.id}}" aria-expanded="false" aria-controls="task_edit">
-                                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                            <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-        
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <div class="form-group row">
-                                        <label for="text-input{{record.id}}" class="col-4 col-form-label">Task</label>
-                                        <div class="col-8">
-                                            <input class="form-control" name="task_name" type="text" id="text-input{{record.id}}" value='{{record.name}}'>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for={{record.date.isoformat}} class="col-4 col-form-label">Date and time</label>
-                                        <div class="col-8">
-                                            <input id={{record.date.isoformat}} class="form-control input_date_edit" name="task_date" type="datetime-local" value={{record.date.isoformat}}>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline-success" type="submit" value={{record.id}} name="edit_task">Save</button>
-                                </form>
-                            </div>
-                        </div>
+                    <!-- Done shared tasks -->
+                    {% for record in shared_done %}
+                        {% include 'main/shared_task.html' %}
                     {% endfor %}
                 </tbody>
             </table>
