@@ -5,7 +5,9 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark py-1">
     <div class="container">
         <div class="navbar-nav">
-            <span class="navbar-brand">Tasks reminder</span>
+            <a href="{% url 'home' %}">
+                <span class="navbar-brand">Tasks reminder</span>
+            </a>
         </div>
 
         <!-- User section: username and logging out button -->
@@ -52,30 +54,32 @@
         </div>
     {% endfor %}
 
-    <!-- Adding new friend form -->
-    <div class="collapse pb-4" id="friend_add">
-        <div class="card card-body">
-            <div class="row pb-2">
-                <h4 class="card-title ml-3 mt-2">Add friend</h5>            
-                <!-- Closing collapsed window -->
-                <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#friend_add" aria-expanded="false" aria-controls="friend_add">
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
-            </div>
-
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-group row">
-                    <label for="example-text-input" class="col-4 col-form-label">Friend's nickname</label>
-                    <div class="col-8">
-                        <input class="form-control" name="friend_name" type="text" id="example-text-input">
-                    </div>
+    <!-- Add friend modal -->
+    <div class="modal fade" id="friend_add" tabindex="-1" aria-labelledby="friend_add" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="friend_add">Add friend</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <button class="btn btn-outline-success btn-block" type="submit" value="1" name="friend_add">Send request</button>
-            </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="input_username" class="col-4 col-form-label">Friend's nickname</label>
+                            <div class="col-8">
+                                <input class="form-control" name="friend_name" type="text" id="input_username">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-success" type="submit" value="1" name="friend_add">Send request</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -128,7 +132,7 @@
                     <!-- Adding new friend button -->
                     <tr>
                         <td colspan="3" class="text-center">
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#friend_add" aria-expanded="false" aria-controls="friend_add">
+                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#friend_add">
                                 Add new friend
                             </button>
                         </td>

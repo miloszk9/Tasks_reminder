@@ -196,7 +196,7 @@ def friends(request):
                 friend_username = request.POST.get('friend_name')
                 cursor.execute('SELECT username_id(%s);', [friend_username])
                 friend_id = cursor.fetchone()
-                if friend_id is not None: # Checks if entered username is valied
+                if friend_id[0] is not None: # Checks if entered username is valied
                     if friend_id[0] == user_id:
                         messages.error(request, 'You cannot add yourself.')
                     else:

@@ -88,36 +88,38 @@
     </div>
     {% endif %}
 
-    <!-- Adding new task form -->
-    <div class="collapse pb-4" id="task_add">
-        <div class="card card-body">
-            <div class="row pb-2">
-                <h4 class="card-title ml-3 mt-2">Create new task</h5>            
-                <!-- Closing collapsed window -->
-                <button class="btn btn-outline-dark border-0 ml-auto mr-3 mb-2 w-4" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
+    <!-- Add new task modal -->
+    <div class="modal fade" id="task_add" tabindex="-1" aria-labelledby="task_add" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="task_add">Create new task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="example-text-input" class="col-4 col-form-label">Task</label>
+                            <div class="col-8">
+                                <input class="form-control" name="task_name" type="text" id="example-text-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="example-datetime-local-input" class="col-4 col-form-label">Date and time</label>
+                            <div class="col-8">
+                                <input id='input_date' class="form-control" name="task_date" type="datetime-local" value='0' id="example-datetime-local-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" value="1" name="new_task" class="btn btn-success">Save</button>
+                    </div>
+                </form>
             </div>
-
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-group row">
-                    <label for="example-text-input" class="col-4 col-form-label">Task</label>
-                    <div class="col-8">
-                        <input class="form-control" name="task_name" type="text" id="example-text-input">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="example-datetime-local-input" class="col-4 col-form-label">Date and time</label>
-                    <div class="col-8">
-                        <input id='input_date' class="form-control" name="task_date" type="datetime-local" value='0' id="example-datetime-local-input">
-                    </div>
-                </div>
-                <button class="btn btn-outline-success btn-block" type="submit" value="1" name="new_task">Save</button>
-            </form>
         </div>
     </div>
     
@@ -158,7 +160,7 @@
                     <!-- Adding new task button -->
                     <tr>
                         <td colspan="6" class="text-center">
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#task_add" aria-expanded="false" aria-controls="task_add">
+                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#task_add">
                                 Add new task
                             </button>
                         </td>
@@ -217,11 +219,6 @@
             time = date.substring(0, 16);
             task.value = time;
         }
-        
-        // Enable tooltips
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
     </script>
 </main>
 {% endblock content%}
