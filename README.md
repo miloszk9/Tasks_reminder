@@ -1,9 +1,28 @@
 # Tasks_reminder
 
-Web app made to have your task list in one place.
+Web app made to keep and share task list.
 
-Admin page: login: admin, password: admin
+### Used frameworks / tools
+* Django
+* PostreSQL
+* psycopg2 
+* Bootstrap
 
-Tools used: Python 3.8.2, Django 3.0.8, Bootstrap 4.5
+### Installation
+```sh
+$ pip install django psycopg2
+```
+
+### Migrate:
+Migrate tables from database.sql file to postgres database
+```sh
+$ python manage.py migrate
+```
+
+### Usage
+
+```sh
+$ python manage.py runserver
+```
 
 Made by: Miłosz Kaszuba
