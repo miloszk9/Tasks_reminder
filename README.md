@@ -13,9 +13,6 @@ Web app made to keep and share task list.
 $ pip install django psycopg2
 ```
 
-## Database model screenshot (created using pgModeler)
-![alt text](https://github.com/miloszk9/Tasks_reminder/blob/master/example%20screenshots/pgmodeler_screenshot.PNG?raw=true)
-
 ## Migrate:
 Migrate tables from database.sql file to postgres database
 ```sh
@@ -27,6 +24,9 @@ $ python manage.py migrate
 ```sh
 $ python manage.py runserver
 ```
+
+## Database model screenshot (created using pgModeler)
+![alt text](https://github.com/miloszk9/Tasks_reminder/blob/master/example%20screenshots/pgmodeler_screenshot.PNG?raw=true)
 
 ## Example usage screenshots
 
