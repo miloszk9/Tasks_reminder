@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.3-beta1" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="7"
+	 default-schema="public" default-owner="postgres">
+<database name="new_database" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<sequence name="user_id_seq" cycle="false" start="1" increment="1" min-value="0" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="task_id_seq" cycle="false" start="1" increment="1" min-value="0" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="birthdate_id_seq" cycle="false" start="1" increment="1" min-value="0" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="friends_id_seq" cycle="false" start="1" increment="1" min-value="0" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="share_id_seq" cycle="false" start="1" increment="1" min-value="0" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="auth_user" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="460" y="120"/>
+	<column name="id" not-null="true" default-value="nextval('user_id_seq')">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="username" not-null="true">
+		<type name="character varying" length="150"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="character varying" length="128"/>
+	</column>
+	<constraint name="user_unique_username" type="uq-constr" table="public.auth_user">
+		<columns names="username" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="user_pk" type="pk-constr" table="public.auth_user">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="task" layer="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="900" y="100"/>
+	<column name="id" not-null="true" default-value="nextval('task_id_seq')">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="user_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="char" length="100"/>
+	</column>
+	<column name="todo_timestamp">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="isDone" default-value="False">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="todo_date">
+		<type name="date" length="0"/>
+	</column>
+	<constraint name="task_pk" type="pk-constr" table="public.task">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="birthdate" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="80" y="120"/>
+	<column name="id" not-null="true" sequence="public.birthdate_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="birthdate" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="user_id">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="birthdate_pk" type="pk-constr" table="public.birthdate">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="friends" layer="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="480" y="520"/>
+	<column name="id" not-null="true" default-value="nextval('friends_id_seq')">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="user1_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="user2_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="is_accepted" default-value="False">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="friends_pk" type="pk-constr" table="public.friends">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="task_share" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="900" y="520"/>
+	<column name="id" not-null="true" sequence="public.share_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="friendship_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="task_id">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="task_share_pk" type="pk-constr" table="public.task_share">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="task_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.auth_user" table="public.task">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="birthdate_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.auth_user" table="public.birthdate">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="friend_user1_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.auth_user" table="public.friends">
+	<columns names="user1_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="friend_user2_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.auth_user" table="public.friends">
+	<columns names="user2_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="share_task_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.task" table="public.task_share">
+	<columns names="task_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="share_friendship_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.friends" table="public.task_share">
+	<columns names="friendship_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_task_share_task" type="relfk" layer="0"
+	 src-table="public.task_share"
+	 dst-table="public.task" reference-fk="share_task_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_birthdate_auth_user" type="relfk" layer="0"
+	 src-table="public.birthdate"
+	 dst-table="public.auth_user" reference-fk="birthdate_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_task_auth_user" type="relfk" layer="0"
+	 src-table="public.task"
+	 dst-table="public.auth_user" reference-fk="task_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_friends_auth_user" type="relfk" layer="0"
+	 src-table="public.friends"
+	 dst-table="public.auth_user" reference-fk="friend_user1_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_friends_auth_user1" type="relfk" layer="0"
+	 src-table="public.friends"
+	 dst-table="public.auth_user" reference-fk="friend_user2_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_task_share_friends" type="relfk" layer="0"
+	 src-table="public.task_share"
+	 dst-table="public.friends" reference-fk="share_friendship_fk"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

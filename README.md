@@ -20,12 +20,12 @@ $ python manage.py migrate
 ```
 
 ## Usage
-
 ```sh
 $ python manage.py runserver
 ```
 
-## Database model screenshot (created using pgModeler)
+## Database model screenshot
+Database model (database_model.dbm) was created with pgModeler
 ![alt text](https://github.com/miloszk9/Tasks_reminder/blob/master/example%20screenshots/pgmodeler_screenshot.PNG?raw=true)
 
 ## Example usage screenshots
