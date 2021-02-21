@@ -1,28 +1,32 @@
-# Tasks_reminder
+# Tasks_reminder - Docker verision
 
 Web app made to keep and share task list.
 
-## Used frameworks / tools
-* Django
-* PostreSQL
-* psycopg2 
-* Bootstrap
+## Prerequirements (no need to install anything else)
+* Docker
+* Docker-compose
 
 ## Installation
 ```sh
-$ pip install django psycopg2
-```
-
-## Migrate:
-Migrate tables from database.sql file to postgres database
-```sh
-$ python manage.py migrate
+$ docker-compose up -d --build
+$ docker exec tasks_reminder_tasks_django_1 python manage.py migrate
 ```
 
 ## Usage
-```sh
-$ python manage.py runserver
-```
+* Main website on 8080 local port
+* pgAdmin4 site on 8081 local port
+
+## Used frameworks / tools
+* Docker
+* Django
+* PostreSQL
+* Bootstrap
+* pgAdmin4
+
+## Docker list
+* Django server
+* PostgreSQL database
+* pgAdmin4
 
 ## Database model screenshot
 Database model (database_model.dbm) was created with pgModeler

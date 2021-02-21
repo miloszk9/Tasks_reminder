@@ -79,7 +79,8 @@ DATABASES = {
         'NAME': 'tasks_reminder',
         'USER': 'postgres',
         'PASSWORD': 'admin',
-        'HOST': 'localhost'
+        'HOST': 'postgres_db',
+        'PORT': '5432'
     }
 }
 

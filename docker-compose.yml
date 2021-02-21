@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+    postgres_db:
+        image: postgres
+        volumes: 
+            - postgres_vol:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=admin
+            - POSTGRES_DB=tasks_reminder
+        networks:
+            - django_net
+        
+    tasks_django:
+        build: ./
+        image: tasks_django
+        ports:
+            - 8080:8080
+        depends_on:
+            - postgres_db
+        networks:
+            - django_net
+    
+    pgadmin:
+        image: dpage/pgadmin4
+        networks:
+            - django_net
+        ports:
+            - 8081:80
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=user@domain.com
+            - PGADMIN_DEFAULT_PASSWORD=admin
+
+networks:
+    django_net:
+
+volumes:
+    postgres_vol:
