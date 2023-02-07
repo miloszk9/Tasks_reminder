@@ -33,7 +33,6 @@ services:
         depends_on:
             - postgres_db
             - tasks_django
-            - pgadmin
 
 networks:
     inner_net:
