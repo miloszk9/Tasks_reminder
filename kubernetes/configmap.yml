@@ -5,4 +5,4 @@ metadata:
   namespace: tasks-reminder
 data:
   DB_NAME: tasks_reminder
-  DB_HOSTNAME: postgres-sts
+  DB_HOSTNAME: postgres
