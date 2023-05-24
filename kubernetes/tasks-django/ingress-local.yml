@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tasks-ingress
+  namespace: tasks-reminder
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: tasks.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: tasks-django-svc
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - tasks.local
+    secretName: ingress-local-tls
