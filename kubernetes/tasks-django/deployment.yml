@@ -44,3 +44,33 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_PASSWORD
+      initContainers:
+        - name: db-migrate
+          image: tasks-django:0.2.0
+          command: ['python', 'manage.py', 'migrate']
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: task-django-secret
+                  key: SECRET_KEY
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: tasks-reminder-config
+                  key: DB_NAME
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: tasks-reminder-config
+                  key: DB_HOSTNAME
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
