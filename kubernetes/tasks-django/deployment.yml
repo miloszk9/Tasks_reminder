@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: tasks-django
-          image: tasks-django:0.2.0
+          image: mylosz/tasks-reminder:0.0.1
           env:
             - name: SECRET_KEY
               valueFrom:
@@ -46,7 +46,7 @@ spec:
                   key: DB_PASSWORD
       initContainers:
         - name: db-migrate
-          image: tasks-django:0.2.0
+          image: mylosz/tasks-reminder:0.0.1
           command: ['python', 'manage.py', 'migrate']
           env:
             - name: SECRET_KEY
