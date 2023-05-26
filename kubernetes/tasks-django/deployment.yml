@@ -29,6 +29,11 @@ spec:
                 configMapKeyRef:
                   name: tasks-reminder-config
                   key: DB_NAME
+            - name: DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: tasks-reminder-config
+                  key: DOMAIN
             - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:

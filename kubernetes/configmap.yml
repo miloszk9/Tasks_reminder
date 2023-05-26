@@ -6,3 +6,4 @@ metadata:
 data:
   DB_NAME: tasks_reminder
   DB_HOSTNAME: postgres
+  DOMAIN: tasks.local
