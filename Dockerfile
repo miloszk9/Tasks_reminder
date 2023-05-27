@@ -1,6 +1,6 @@
 FROM python:3.8
 
-RUN pip install django==3.2.17 gunicorn psycopg2
+RUN pip install django==3.2.19 gunicorn psycopg2
 
 COPY ./database.sql /app/
 COPY ./manage.py /app/
