@@ -11,9 +11,6 @@ Web app made to keep and share task list.
 $ docker buildx build --platform linux/amd64,linux/arm64 -t mylosz/tasks-reminder:<tag> --push .
 ```
 
-## Usage
-* Main website on 8080 local port
-
 ## Used frameworks / tools
 * Kubernetes
 * Django
