@@ -1,4 +1,4 @@
-# Tasks_reminder - Docker verision
+# Tasks_reminder - Kubernetes verision
 
 Web app made to keep and share task list.
 
@@ -6,24 +6,28 @@ Web app made to keep and share task list.
 * Docker
 * Docker-compose
 
-## Installation
+## Image build
 ```sh
-$ docker-compose up -d --build
-$ docker exec tasks_reminder_tasks_django_1 python manage.py migrate
+$ docker buildx build --platform linux/amd64,linux/arm64 -t mylosz/tasks-reminder:<tag> --push .
 ```
 
 ## Usage
 * Main website on 8080 local port
 
 ## Used frameworks / tools
-* Docker
+* Kubernetes
 * Django
 * PostreSQL
 * Bootstrap
+* Letsencrypt
 
 ## Docker list
 * Django server
 * PostgreSQL database
+
+## How it was deployed
+* Self-deployed K3S cluster on Oracle Cloud
+* TLS certificates from Letsencrypt (with cert-manager usage)
 
 ## Database model screenshot
 Database model (database_model.dbm) was created with pgModeler
